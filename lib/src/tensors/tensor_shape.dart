@@ -10,7 +10,7 @@ class TensorShape {
 
   TensorShape(List<int> shape) {
     if (shape.isEmpty || shape.any((dim) => dim <= 0)) {
-      throw ArgumentError('shape must be not empty list of non-negative integers', 'shape');
+      throw ArgumentError('shape must be not empty list of positive integers, but received $shape', 'shape');
     }
     list = shape;
     rank = list.length;
@@ -56,7 +56,9 @@ class TensorShape {
       }
     }
     return true;
-  } 
+  }
+
+  bool broadcastableWith(TensorShape other) => equalWith(other) || compatibleWith(other) || equalWithLastDims(other);
 
   @override
   String toString() => list.toString();

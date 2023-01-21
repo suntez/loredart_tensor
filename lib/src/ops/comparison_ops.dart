@@ -1,6 +1,6 @@
 import '/src/utils/dtype_utils.dart';
 import '/src/tensors/tensor.dart';
-import 'broadcastable_basic_operations.dart' show broadcastCompShapes;
+import 'basic_ops.dart' show broadcastCompShapes;
 
 enum ComparisonType {equal, notEqual, greater, greaterEqual, less, lessEqual}
 

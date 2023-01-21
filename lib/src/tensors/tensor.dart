@@ -3,9 +3,7 @@ import 'dart:typed_data';
 import '/src/utils/diagonal_utils.dart';
 import '/src/utils/shape_utils.dart';
 
-import '/src/ops/basic_operations.dart';
-import '/src/ops/broadcastable_basic_operations.dart';
-import '/src/utils/dtype_utils.dart';
+import '../ops/basic_ops.dart';
 import 'float32list_num_tensor.dart';
 import 'float64list_num_tensor.dart';
 import 'int32list_num_tensor.dart';
@@ -14,6 +12,8 @@ import 'tensor_shape.dart';
 
 
 /// The data types of the elements in a [Tensor].
+/// 
+/// `bool` and `string` data types aren't supported yet
 enum DType { float32, float64, int32, int64, string, bool }
 
 /// The data types of the elements in a [Tensor].
@@ -32,8 +32,8 @@ extension DTypeTypes on DType {
 const Map<Type, DType> defaultTypesToDTypes = {
   int: DType.int32,
   double: DType.float32,
-  bool: DType.bool,
-  String: DType.string
+  // bool: DType.bool,
+  // String: DType.string
 };
 
 /// The representation of a multidimensional array of elements of a single type.
@@ -83,7 +83,7 @@ abstract class Tensor {
   /// // [[1, 2]
   /// //  [3, 4]], dType: int32)>
   ///
-  /// Tensor t = Tensor.constant([1,2,3,4,5,6], shape: [3,2]); // from vector to any tensor
+  /// Tensor t = Tensor.constant([1,2,3,4,5,6], shape: [3,2]); // from vector to any shape
   /// print(t);
   /// // <Tensor(shape: [3, 2], values:
   /// // [[1, 2]
@@ -330,114 +330,50 @@ abstract class NumericTensor<L extends List> implements Tensor {
   @override
   Tensor operator +(Object other) {
     if (other is num) {
-      final resultDType = dTypeAndNumDecision(dType, other.runtimeType);
-      return addScalar(this, other, resultDType);
+      return addScalar(this, other);
     } else if (other is NumericTensor) {
-      final resultDType = dTypeDecision(dType, other.dType);
-      if (shape.equalWith(other.shape)) {
-        return add(this, other, resultDType);
-      } else if (shape.compatibleWith(other.shape)) {
-        return addWithCompShape(this, other, resultDType);
-      } else if (shape.equalWithLastDims(other.shape)) {
-        return addWithLastDims(rank > other.rank ? this : other,
-            rank < other.rank ? this : other, resultDType);
-      } else if (other.shape.size == 1) {
-        return addScalar(this, other.buffer[0], resultDType);
-      } else {
-        throw ArgumentError.value(other.shape, '',
-            'Error shape: ${other.shape} is not compatible with $shape');
-      }
+      return numericOperation(this, other, OperationType.add);
     } else {
-      throw ArgumentError(
-          'Expected num or Tensor, but got ${other.runtimeType}');
+      throw ArgumentError('Expected num or NumericalTensor (of the same DType) as other, but received ${other.runtimeType}', 'other');
     }
   }
 
   @override
   Tensor operator -(Object other) {
     if (other is num) {
-      final resultDType = dTypeAndNumDecision(dType, other.runtimeType);
-      return subtractScalar(this, other, resultDType);
+      return subtractScalar(this, other);
     } else if (other is NumericTensor) {
-      final resultDType = dTypeDecision(dType, other.dType);
-      if (shape.equalWith(other.shape)) {
-        return subtract(this, other, resultDType);
-      } else if (shape.compatibleWith(other.shape)) {
-        return subtractWithCompShape(this, other, resultDType);
-      } else if (shape.equalWithLastDims(other.shape)) {
-        return subtractWithLastDims(
-            rank > other.rank ? this : other,
-            rank < other.rank ? this : other,
-            resultDType);
-      } else if (other.shape.size == 1) {
-        return subtractScalar(this, other.buffer[0], resultDType);
-      } else {
-        throw ArgumentError.value(other.shape, '',
-            'Error shape: ${other.shape} is not compatible with $shape');
-      }
+      return numericOperation(this, other, OperationType.subtract);
     } else {
-      throw ArgumentError(
-          'Expected num or Tensor, but got ${other.runtimeType}');
+      throw ArgumentError('Expected num or NumericalTensor (of the same DType) as other, but received ${other.runtimeType}', 'other');
     }
   }
 
   @override
   Tensor operator *(Object other) {
     if (other is num) {
-      final resultDType = dTypeAndNumDecision(dType, other.runtimeType);
-      return multiplyScalar(this, other, resultDType);
+      return multiplyScalar(this, other);
     } else if (other is NumericTensor) {
-      final resultDType = dTypeDecision(dType, other.dType);
-      if (shape.equalWith(other.shape)) {
-        return multiply(this, other, resultDType);
-      } else if (shape.compatibleWith(other.shape)) {
-        return multiplyWithCompShape(this, other, resultDType);
-      } else if (shape.equalWithLastDims(other.shape)) {
-        return multiplyWithLastDims(
-            rank > other.rank ? this : other,
-            rank < other.rank ? this : other,
-            resultDType);
-      } else if (other.shape.size == 1) {
-        return multiplyScalar(this, other.buffer[0], resultDType);
-      } else {
-        throw ArgumentError.value(other.shape, '',
-            'Error shape: ${other.shape} is not compatible with $shape');
-      }
+      return numericOperation(this, other, OperationType.multiply);
     } else {
-      throw ArgumentError(
-          'Expected num or Tensor, but got ${other.runtimeType}');
+      throw ArgumentError('Expected num or NumericalTensor (of the same DType) as other, but received ${other.runtimeType}', 'other');
     }
   }
 
   @override
   Tensor operator /(Object other) {
     if (other is num) {
-      final resultDType = dTypeAndNumDecision(dType, other.runtimeType);
-      return divideScalar(this, other, resultDType);
+      return divideScalar(this, other);
     } else if (other is NumericTensor) {
-      final resultDType = dTypeDecision(dType, other.dType);
-      if (shape.equalWith(other.shape)) {
-        return divide(this, other, resultDType);
-      } else if (shape.compatibleWith(other.shape)) {
-        return divideWithCompShape(this, other, resultDType);
-      } else if (shape.equalWithLastDims(other.shape)) {
-        return divideWithLastDims(rank > other.rank ? this : other,
-            rank > other.rank ? other : this, resultDType);
-      } else if (other.shape.size == 1) {
-        return divideScalar(this, other.buffer[0], resultDType);
-      } else {
-        throw ArgumentError.value(other.shape, '',
-            'Error shape: ${other.shape} is not compatible with $shape');
-      }
+      return numericOperation(this, other, OperationType.divide);
     } else {
-      throw ArgumentError(
-          'Expected num or Tensor, but got ${other.runtimeType}');
+      throw ArgumentError('Expected num or NumericalTensor (of the same DType) as other, but received ${other.runtimeType}', 'other');
     }
   }
 
   @override
   Tensor operator -() {
-    return negative(this, dType);
+    return negative(this);
   }
 
   @override

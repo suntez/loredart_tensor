@@ -26,7 +26,7 @@ DType dTypeAndNumDecision(DType dType, Type type, [bool tensorInitialization = f
   } else if ((dType == DType.int32 || dType == DType.int64) && type == double && tensorInitialization) {
     return dType;
   } else {
-    throw UnsupportedError('DType $dType and Type $type are not compatible');
+    throw UnsupportedError('$dType and $type are not compatible data types.');
   }
 }
 
@@ -41,7 +41,7 @@ List emptyBuffer(DType dType, int length) {
     return Int64List(length);
   }
   else {
-    throw UnsupportedError('DType $dType is not supported for empty buffer');
+    throw UnsupportedError('$dType is not supported for empty buffer');
   }
 }
 
