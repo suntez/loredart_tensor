@@ -6,7 +6,7 @@ DType dTypeDecision(DType dType1, DType dType2) {
   if (dType1 == dType2) {
     return dType1;
   } else {
-    throw ArgumentError('Tensors must be of the same DType, but got $dType1 and $dType2');
+    throw ArgumentError('Tensors must be of the same DType, but received $dType1 and $dType2');
   }
 }
 
@@ -30,7 +30,7 @@ DType dTypeAndNumDecision(DType dType, Type type, [bool tensorInitialization = f
   }
 }
 
-List<num> emptyBuffer(DType dType, int length) {
+List emptyBuffer(DType dType, int length) {
   if (dType == DType.float32) {
     return Float32List(length);
   } else if (dType == DType.float64) {
@@ -41,7 +41,7 @@ List<num> emptyBuffer(DType dType, int length) {
     return Int64List(length);
   }
   else {
-    throw UnsupportedError('DType $dType is not yet supported for empty buffer');
+    throw UnsupportedError('DType $dType is not supported for empty buffer');
   }
 }
 

@@ -157,7 +157,7 @@ Tensor addWithLastDims(NumericTensor t, NumericTensor other, DType dType) {
       buffer[b*matchSize + i] = t.buffer[b*matchSize + i] + other.buffer[i];
     }
   }
-  return Tensor.fromBuffer(buffer, t.shape.list);
+  return Tensor.fromBuffer(buffer, t.shape.list, dType: dType);
 }
 
 /// Computes "element-wise" subtraction  of Tensors [t] and [other] with equal k dims of shape.
@@ -176,7 +176,7 @@ Tensor subtractWithLastDims(NumericTensor t, NumericTensor other, DType dType) {
       buffer[b*matchSize + i] = t.buffer[b*matchSize + i] - other.buffer[i];
     }
   }
-  return Tensor.fromBuffer(buffer, t.shape.list);
+  return Tensor.fromBuffer(buffer, t.shape.list, dType: dType);
 }
 
 /// Computes "element-wise" multiplication of Tensors [t] and [other] with equal k dims of shape.
@@ -195,7 +195,7 @@ Tensor multiplyWithLastDims(NumericTensor t, NumericTensor other, DType dType) {
       buffer[b*matchSize + i] = t.buffer[b*matchSize + i] * other.buffer[i];
     }
   }
-  return Tensor.fromBuffer(buffer, t.shape.list);
+  return Tensor.fromBuffer(buffer, t.shape.list, dType: dType);
 }
 
 /// Computes "element-wise" division of Tensors [t] and [other] with equal k last dims of shape.
@@ -213,5 +213,5 @@ Tensor divideWithLastDims(NumericTensor t, NumericTensor other, DType dType) {
       buffer[b*matchSize + i] = dType.isInt ? (t.buffer[b*matchSize + i] / other.buffer[i] as num).toInt() : t.buffer[b*matchSize + i] / other.buffer[i];
     }
   }
-  return Tensor.fromBuffer(buffer, t.shape.list);
+  return Tensor.fromBuffer(buffer, t.shape.list, dType: dType);
 }

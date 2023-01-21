@@ -3,8 +3,8 @@ import 'dart:typed_data';
 import '/src/utils/diagonal_utils.dart';
 import '/src/utils/shape_utils.dart';
 
-import '/src/math/basic_operations.dart';
-import '/src/math/broadcastable_basic_operations.dart';
+import '/src/ops/basic_operations.dart';
+import '/src/ops/broadcastable_basic_operations.dart';
 import '/src/utils/dtype_utils.dart';
 import 'float32list_num_tensor.dart';
 import 'float64list_num_tensor.dart';
@@ -58,7 +58,7 @@ abstract class Tensor {
   /// 
   /// [values] may be list of [num] or have a multidimensional structure. Non-numerical lists aren't supported yet.
   /// 
-  /// If [shape] is specified, tries to reshape elements to match, otherwise inherits shape from [values].
+  /// If [shape] is specified, tries to reshape elements to match it, otherwise inherits shape from [values].
   /// If number of elements of [values] won't be equal to [shape.size] throws an [ArgumentError].
   /// 
   /// If [dType] is specified, casts elements of [value] to meet the type, otherwise will inherit [dType] according to `defaultTypesToDTypes`.
@@ -150,7 +150,7 @@ abstract class Tensor {
   }
 
   factory Tensor.fromBuffer(List buffer, List<int> shape,
-      {DType dType = DType.float32}) {
+      {required DType dType}) {
     if (buffer.length != shape.reduce((e1,e2)=>e1*e2)) {
       throw ArgumentError('Cannot allocate ${buffer.length} elements into shape $shape');
     }
@@ -349,8 +349,7 @@ abstract class NumericTensor<L extends List> implements Tensor {
       }
     } else {
       throw ArgumentError(
-          'Expected num or Tensor, but got ${other.runtimeType}',
-          'loredart_tensor');
+          'Expected num or Tensor, but got ${other.runtimeType}');
     }
   }
 
@@ -378,8 +377,7 @@ abstract class NumericTensor<L extends List> implements Tensor {
       }
     } else {
       throw ArgumentError(
-          'Expected num or Tensor, but got ${other.runtimeType}',
-          'loredart_tensor');
+          'Expected num or Tensor, but got ${other.runtimeType}');
     }
   }
 
@@ -407,8 +405,7 @@ abstract class NumericTensor<L extends List> implements Tensor {
       }
     } else {
       throw ArgumentError(
-          'Expected num or Tensor, but got ${other.runtimeType}',
-          'loredart_tensor');
+          'Expected num or Tensor, but got ${other.runtimeType}');
     }
   }
 
@@ -434,8 +431,7 @@ abstract class NumericTensor<L extends List> implements Tensor {
       }
     } else {
       throw ArgumentError(
-          'Expected num or Tensor, but got ${other.runtimeType}',
-          'loredart_tensor');
+          'Expected num or Tensor, but got ${other.runtimeType}');
     }
   }
 

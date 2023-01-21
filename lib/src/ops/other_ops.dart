@@ -1,7 +1,6 @@
-import 'package:loredart_tensor/src/utils/dtype_utils.dart';
-
-import '../tensors/int32list_num_tensor.dart';
-import '../tensors/tensor.dart';
+import '/src/utils/dtype_utils.dart';
+import '/src/tensors/int32list_num_tensor.dart';
+import '/src/tensors/tensor.dart';
 
 /// Concatenates [Tensor]s of [tensors] along one given dimension [axis].
 /// 
