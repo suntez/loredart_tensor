@@ -9,4 +9,4 @@ build/
 # https://dart.dev/guides/libraries/private-files#pubspeclock.
 pubspec.lock
 
-.test/tf_test.ipynb
+test/tf_test.ipynb

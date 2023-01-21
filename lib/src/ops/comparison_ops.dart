@@ -1,3 +1,4 @@
+import '/src/ops/other_ops.dart' show reshape;
 import '/src/utils/dtype_utils.dart';
 import '/src/tensors/tensor.dart';
 import 'basic_ops.dart' show broadcastCompShapes;
@@ -22,52 +23,61 @@ bool compare(num x, num y, ComparisonType type) {
   }
 }
 
-Tensor compareTensors(NumericTensor x, NumericTensor y, {required ComparisonType type, DType? dType}) {
-  if (x.dType != y.dType) {
-    throw ArgumentError('Tensors to compare must be of the same DType, but received ${x.dType} and ${y.dType}');
+Tensor compareTensors(NumericTensor x, NumericTensor other, {required ComparisonType type}) {
+  if (x.dType != other.dType) {
+    throw ArgumentError('Tensors to compare must be of the same DType, but received ${x.dType} and ${other.dType}');
   }
-  dType ??= x.dType;
 
-  if (x.shape.size == 1 || y.shape.size == 1) {
-    return compareWithScalar(x.shape.size == 1 ? y : x, x.shape.size == 1 ? x.buffer[0] : y.buffer[0], type: type, dType: dType);
-  } else if (x.shape.compatibleWith(y.shape)) {
-    return compareWithCompShapes(x, y, type: type, dType: dType);
-  } else if (x.shape.equalWithLastDims(y.shape)) {
-    return compareWithLastDims(x, y, type: type, dType: dType);
-  } else if (y.shape.equalWithLastDims(x.shape)) {
-    return compareWithLastDims(y, x, type: type, dType: dType);
-  } else if (x.shape.equalWith(y.shape)) {
-    return compareWithEqualShapes(x, y, type: type, dType: dType);
+   if (other.shape.size == 1) {
+    if (other.rank > x.rank) {
+      x = reshape(x, [...List.filled(other.rank-x.rank, 1), ...x.shape.list]) as NumericTensor;
+    }
+    return compareWithScalar(x, other.buffer[0], type: type);
+  } else if (x.shape.size == 1) {
+    if (x.rank > other.rank) {
+      x = reshape(other, [...List.filled(x.rank-other.rank, 1), ...other.shape.list]) as NumericTensor;
+    }
+    return compareWithScalar(other, x.buffer[0], type: type);
+  } else if (x.shape.compatibleWith(other.shape)) {
+    return compareWithCompShapes(x, other, type: type);
+  } else if (x.shape.equalWithLastDims(other.shape)) {
+    return compareWithLastDims(x, other, type: type);
+  } else if (other.shape.equalWithLastDims(x.shape)) {
+    return compareWithLastDims(other, x, type: type);
+  } else if (x.shape.equalWith(other.shape)) {
+    return compareWithEqualShapes(x, other, type: type);
   } else {
-    throw ArgumentError('Tensors must be with compilable shapes, but received ${x.shape} and ${y.shape}');
+    throw ArgumentError('Tensors must be with compilable shapes, but received ${x.shape} and ${other.shape}');
   }
 }
 
-Tensor compareWithScalar(NumericTensor t, num scalar, {required ComparisonType type, required DType dType}) {
-  List buffer = emptyBuffer(dType, t.shape.size);
-  for (int i = 0; i < t.shape.size; i += 1) {
-    if(compare(t.buffer[i], scalar, type)) {
+Tensor compareWithScalar(NumericTensor x, num scalar, {required ComparisonType type}) {
+  List buffer = emptyBuffer(x.dType, x.shape.size);
+  for (int i = 0; i < x.shape.size; i += 1) {
+    if(compare(x.buffer[i], scalar, type)) {
+      buffer[i] = x.dType.isInt ? 1 : 1.0;
+    }
+  }
+  return Tensor.fromBuffer(buffer, x.shape.list, dType: x.dType);
+}
+
+Tensor compareWithEqualShapes(NumericTensor x, NumericTensor other, {required ComparisonType type}) {
+  final dType = dTypeDecision(x.dType, other.dType);
+  List buffer = emptyBuffer(dType, x.shape.size);
+  for (int i = 0; i < x.shape.size; i += 1) {
+    if(compare(x.buffer[i], other.buffer[i], type)) {
       buffer[i] = dType.isInt ? 1 : 1.0;
     }
   }
-  return Tensor.fromBuffer(buffer, t.shape.list, dType: dType);
+  return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
 }
 
-Tensor compareWithEqualShapes(NumericTensor t, NumericTensor other, {required ComparisonType type, required DType dType}) {
-  List buffer = emptyBuffer(dType, t.shape.size);
-  for (int i = 0; i < t.shape.size; i += 1) {
-    if(compare(t.buffer[i], other.buffer[i], type)) {
-      buffer[i] = dType.isInt ? 1 : 1.0;
-    }
-  }
-  return Tensor.fromBuffer(buffer, t.shape.list, dType: dType);
-}
-
-Tensor compareWithCompShapes(NumericTensor t, NumericTensor other, {required ComparisonType type, required DType dType}) {
-  final List<int> shape = broadcastCompShapes(t.shape, other.shape);
+Tensor compareWithCompShapes(NumericTensor x, NumericTensor other, {required ComparisonType type}) {
+  final dType = dTypeDecision(x.dType, other.dType);
+  final List<int> shape = broadcastCompShapes(x.shape, other.shape);
   final int length = shape.reduce((a,b) => a*b);
 
-  final List<int> cumProdT = List<int>.generate(shape.length, (i) => i == shape.length-1 ? 1 : (t.shape[i] == 1 ? 0 : t.shape.list.sublist(i+1).reduce((e1, e2) => e1*e2)));
+  final List<int> cumProdT = List<int>.generate(shape.length, (i) => i == shape.length-1 ? 1 : (x.shape[i] == 1 ? 0 : x.shape.list.sublist(i+1).reduce((e1, e2) => e1*e2)));
   final List<int> cumProdOther = List<int>.generate(shape.length, (i) => i == shape.length-1 ? 1 : (other.shape[i] == 1 ? 0 : other.shape.list.sublist(i+1).reduce((e1, e2) => e1*e2)));
 
   List<int> currentIndices = List<int>.filled(shape.length, 0);
@@ -83,35 +93,36 @@ Tensor compareWithCompShapes(NumericTensor t, NumericTensor other, {required Com
         index = index ~/ shape[j];
     }
     for (int k = 0; k < shape.length; k += 1) {
-      tIndex += t.shape[k] == 1 ? 0 : cumProdT[k] * currentIndices[k];
+      tIndex += x.shape[k] == 1 ? 0 : cumProdT[k] * currentIndices[k];
       otherIndex += other.shape[k] == 1 ? 0 : cumProdOther[k] * currentIndices[k];
     }
-    if (compare(t.buffer[tIndex], other.buffer[otherIndex], type)) {
+    if (compare(x.buffer[tIndex], other.buffer[otherIndex], type)) {
       buffer[i] = dType.isInt ? 1 : 1.0;
     }
   }
   return Tensor.fromBuffer(buffer, shape, dType: dType);
 }
 
-Tensor compareWithLastDims(NumericTensor t, NumericTensor other, {required ComparisonType type, required DType dType}) {
-  if (other.shape.size > t.shape.size) {
-    throw ArgumentError('Incorrect arguments order: expect to have t with bigger size than other');
+Tensor compareWithLastDims(NumericTensor x, NumericTensor other, {required ComparisonType type}) {
+  if (other.shape.size > x.shape.size) {
+    throw ArgumentError('Incorrect arguments order: expect to have x with bigger size than other');
   }
-  List buffer = emptyBuffer(dType, t.shape.size);
-  final int residualSize = t.shape.list.sublist(0, t.rank-other.rank).reduce((e1, e2) => e1*e2);
+  final dType = dTypeDecision(x.dType, other.dType);
+  List buffer = emptyBuffer(dType, x.shape.size);
+  final int residualSize = x.shape.list.sublist(0, x.rank-other.rank).reduce((e1, e2) => e1*e2);
   final int matchSize = other.shape.size;
   for (int b = 0; b < residualSize; b += 1) {
     for (int i = 0; i < matchSize; i += 1) {
-      if (compare(t.buffer[b*matchSize + i], other.buffer[i], type)) {
+      if (compare(x.buffer[b*matchSize + i], other.buffer[i], type)) {
         buffer[b*matchSize + i] = dType.isInt ? 1 : 1.0;
       }
     }
   }
-  return Tensor.fromBuffer(buffer, t.shape.list, dType: dType);
+  return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
 }
 
 
-NumericTensor convertToNumvericTensor(dynamic object) {
+NumericTensor convertToNumericTensor(dynamic object) {
   if (object is NumericTensor) {
     return object;
   }
@@ -122,50 +133,50 @@ NumericTensor convertToNumvericTensor(dynamic object) {
   }
 }
 
-Tensor equal(Tensor x, dynamic y, {DType? dtype}) {
+Tensor equal(Tensor x, dynamic y) {
   if (x is! NumericTensor) {
-    throw ArgumentError('Expected x and y must be numeric tensors, but received x: ${x.dType}');
+    throw ArgumentError('Expected x to a NumericTensor, but received x of ${x.dType}');
   }
-  NumericTensor v = convertToNumvericTensor(y);
-  return compareTensors(x, v, type: ComparisonType.equal, dType: dtype);
+  NumericTensor v = convertToNumericTensor(y);
+  return compareTensors(x, v, type: ComparisonType.equal);
 }
 
-Tensor greater(Tensor x, dynamic y, {DType? dtype}) {
+Tensor greater(Tensor x, dynamic y) {
   if (x is! NumericTensor) {
-    throw ArgumentError('Expected x and y must be numeric tensors, but received x: ${x.dType}');
+    throw ArgumentError('Expected x to a NumericTensor, but received x of ${x.dType}');
   }
-  NumericTensor v = convertToNumvericTensor(y);
-  return compareTensors(x, v, type: ComparisonType.greater, dType: dtype);
+  NumericTensor v = convertToNumericTensor(y);
+  return compareTensors(x, v, type: ComparisonType.greater);
 }
 
-Tensor greaterEqual(Tensor x, dynamic y, {DType? dtype}) {
+Tensor greaterEqual(Tensor x, dynamic y) {
   if (x is! NumericTensor) {
-    throw ArgumentError('Expected x and y must be numeric tensors, but received x: ${x.dType}');
+    throw ArgumentError('Expected x to a NumericTensor, but received x of ${x.dType}');
   }
-  NumericTensor v = convertToNumvericTensor(y);
-  return compareTensors(x, v, type: ComparisonType.greaterEqual, dType: dtype);
+  NumericTensor v = convertToNumericTensor(y);
+  return compareTensors(x, v, type: ComparisonType.greaterEqual);
 }
 
-Tensor less(Tensor x, dynamic y, {DType? dtype}) {
+Tensor less(Tensor x, dynamic y) {
   if (x is! NumericTensor) {
-    throw ArgumentError('Expected x and y must be numeric tensors, but received x: ${x.dType}');
+    throw ArgumentError('Expected x to a NumericTensor, but received x of ${x.dType}');
   }
-  NumericTensor v = convertToNumvericTensor(y);
-  return compareTensors(x, v, type: ComparisonType.less, dType: dtype);
+  NumericTensor v = convertToNumericTensor(y);
+  return compareTensors(x, v, type: ComparisonType.less);
 }
 
-Tensor lessEqual(Tensor x, dynamic y, {DType? dtype}) {
+Tensor lessEqual(Tensor x, dynamic y) {
   if (x is! NumericTensor) {
-    throw ArgumentError('Expected x and y must be numeric tensors, but received x: ${x.dType}');
+    throw ArgumentError('Expected x to a NumericTensor, but received x of ${x.dType}');
   }
-  NumericTensor v = convertToNumvericTensor(y);
-  return compareTensors(x, v, type: ComparisonType.lessEqual, dType: dtype);
+  NumericTensor v = convertToNumericTensor(y);
+  return compareTensors(x, v, type: ComparisonType.lessEqual);
 }
 
-Tensor notEqual(Tensor x, dynamic y, {DType? dtype}) {
+Tensor notEqual(Tensor x, dynamic y) {
   if (x is! NumericTensor) {
-    throw ArgumentError('Expected x and y must be numeric tensors, but received x: ${x.dType}');
+    throw ArgumentError('Expected x to a NumericTensor, but received x of ${x.dType}');
   }
-  NumericTensor v = convertToNumvericTensor(y);
-  return compareTensors(x, v, type: ComparisonType.notEqual, dType: dtype);
+  NumericTensor v = convertToNumericTensor(y);
+  return compareTensors(x, v, type: ComparisonType.notEqual);
 }

@@ -192,7 +192,7 @@ Tensor numericOperation(NumericTensor x, NumericTensor other, OperationType oper
         x = reshape(other, [...List.filled(x.rank-other.rank, 1), ...other.shape.list]) as NumericTensor;
       }
       return opWithScalar(other, x.buffer[0], operationType);
-    }  else {
+    } else {
       throw ArgumentError('Tensor shape ${x.shape} is not compatible with ${other.shape}', 'other');
     }
 }
