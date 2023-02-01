@@ -1,13 +1,15 @@
 import 'dart:math' show Random;
+import 'package:loredart_tensor/loredart_tensor.dart';
+
 import '../tensors/tensor.dart';
 import '../utils/random_utils.dart';
 
 /// Outputs [Tensor] of given [shape] with random values from a uniform distribution.
 /// 
-/// The generated values follow a uniform distribution in the range [[min], [maxval]), i.e.,
+/// The generated values follow a uniform distribution in the range [[min], [maxval]),
 /// the lower bound is included, while the upper bound - excluded.
 /// 
-/// The default range is [0, 1) (in that case for int based [dType] will returns zeros).
+/// The default range is [0, 1) (in such case for int based [dType] will returns zeros).
 /// 
 /// If [min] > [max], will swap [min] and [max].
 /// 
@@ -74,7 +76,20 @@ Tensor normal(List<int> shape, {num mean = 0.0, num std = 1.0, DType dType = DTy
   }
 }
 
-
+/// Outputs [Tensor] of given [shape] with random values from a truncated normal distribution.
+/// 
+/// The values are drawn from a normal distribution with specified [mean] and [std],
+/// discarding and re-drawing any samples that are more than two standard deviations from the [mean].
+/// 
+/// Throws an ArgumentError if [dType] is not [DType.float32] or [DType.float64].
+/// 
+/// Example:
+/// ```dart
+/// Tensor x = truncatedNormal([3,3], mean: 1.0, std: 2.0);
+/// print(x);
+/// // <Tensor(shape: [3, 3], values:
+/// // [[...]], dType: float32)>
+/// ```
 Tensor truncatedNormal(List<int> shape, {num mean = 0.0, num std = 1.0, DType dType = DType.float32, int? seed}) {
   if (dType.isDouble) {
     List<double> values = generateTruncatedNormallyDistList(shape.reduce((e1,e2) => e1*e2), mean, std, seed: seed);
@@ -82,4 +97,12 @@ Tensor truncatedNormal(List<int> shape, {num mean = 0.0, num std = 1.0, DType dT
   } else {
     throw ArgumentError('DType $dType is not supported for normal random generation', 'dType');
   }
+}
+
+//TODO: to RandomTensor or not ?
+/// The collection of a method to output a random [Tensor] from different distributions.
+class RandomTensor {
+  static uniform(List<int> shape, {num min = 0.0, num max = 1.0, DType dType = DType.float32, int? seed}) => uniform(shape, min: min, max: max, dType: dType, seed: seed);
+  static normal(List<int> shape, {num mean = 0.0, num std = 1.0, DType dType = DType.float32, int? seed}) => normal(shape, mean: mean, std:std, dType: dType, seed: seed);
+  static truncatedNormal(List<int> shape, {num mean = 0.0, num std = 1.0, DType dType = DType.float32, int? seed}) => truncatedNormal(shape, mean: mean, std:std, dType: dType, seed: seed);
 }

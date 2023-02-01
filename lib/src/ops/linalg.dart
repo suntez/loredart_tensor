@@ -52,7 +52,7 @@ Tensor matmul(Tensor a, Tensor b, {bool transposeA = false, bool transposeB = fa
     final bL = transposeB ? b.shape[-2] : b.shape[-1];
 
     if (aN != bN) {
-      throw ArgumentError('Last dims of a and b should meet requirements of matrix multiplication, but $aN != $bN');
+      throw ArgumentError('Last dims of a and b should meet requirements of matrix multiplication, but received $aN != $bN');
     }
 
     final int combinedBatchSize = a.shape.size ~/ aM ~/ aN;
@@ -78,7 +78,7 @@ Tensor matmul(Tensor a, Tensor b, {bool transposeA = false, bool transposeB = fa
     }
     return Tensor.fromBuffer(buffer, shape, dType: dType);
   } else {
-    throw ArgumentError('Tensors a and b should be NumericTensor(s) of the same DType');
+    throw ArgumentError('Tensors a and b should be NumericTensors of the same DType, but received ${a.dType} and ${b.dType}');
   }
 }
 

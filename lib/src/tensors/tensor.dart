@@ -38,8 +38,7 @@ const Map<Type, DType> defaultTypesToDTypes = {
 
 /// The representation of a multidimensional array of elements of a single type.
 /// 
-/// 
-/// 
+/// Each [Tensor] charactirizes by it's [DType] and [shape].
 /// 
 /// 
 abstract class Tensor {
@@ -122,7 +121,7 @@ abstract class Tensor {
     }
   }
 
-  /// Creates a [Tensor] of type [dType] with [shape] and all elements set to zero.
+  /// Creates a [Tensor] of the [dType] with [shape] and all elements set to zero.
   /// 
   /// Throws an [ArgumentError] if [dType] is non-numeric.
   /// 
@@ -164,11 +163,11 @@ abstract class Tensor {
       return Int64NumericTensor.fromBuffer(buffer as Int64List, shape);
     } else {
       throw ArgumentError(
-          'DType $dType is not supported for Tensor.fromBuffer factory', 'dType');
+          'DType $dType is not supported for Tensor.fromBuffer', 'dType');
     }
   }
 
-  /// Creates an identity matrix (or batch of matrices) of type [dType].
+  /// Creates an identity matrix (or batch of matrices) of the [dType].
   /// 
   /// Constructs square matrix of size [numRows]x[numRows] or rect matrix of size [numRows]x[numCols] if [numCols] is specified.
   /// 
@@ -221,7 +220,7 @@ abstract class Tensor {
     }
   }
 
-  /// Creates a [Tensor] of type [dType] with [shape] and all elements set to [value].
+  /// Creates a [Tensor] of the [dType] with [shape] and all elements set to [value].
   /// 
   /// [Tensor.fill] will cast [value] according to the [dType].
   /// 
@@ -260,7 +259,7 @@ abstract class Tensor {
     }
   }
 
-  /// Creates a [Tensor] of type [dType] with [shape] and all elements set to one.
+  /// Creates a [Tensor] of the [dType] with [shape] and all elements set to one.
   /// 
   /// Throws an [ArgumentError] if [dType] is not numeric.
   /// 
@@ -287,7 +286,42 @@ abstract class Tensor {
     }
   }
 
-  //TODO: API for diag
+  /// Creates a diagonal [Tensor] (or a batch of them) of the [dType] with given [diagonal] elements and everything else padded with zeros.
+  /// 
+  /// The [diagonal] might be a list of nums for creating a matrix or a nested list for making the batched 3D [Tensor].
+  /// 
+  /// By default, the diagonal elements will be located along the main diagonal, but it can be changed with the [offset].
+  /// Specifying the [offset] will increase the size of the dimensions by its absolute value.
+  /// 
+  /// By default it returns squared matrix(-ces).
+  /// If [numRows] and/or [numCols] are specified, it will pad extra rows and/or columns with zeros.
+  /// If [numRows] or [numCols] is smaller than the number of diagonal elements will throw [ArgumentError].
+  ///
+  ///
+  ///Example:
+  ///```dart
+  /// final diagonal = [1,2];
+  /// 
+  /// var x = Tensor.diag(diagonal);
+  /// print(x); // <Tensor(shape: [2, 2], values: [[1.0, 0.0], [0.0, 2.0]], dType: float32)>
+  /// 
+  /// var y = print(Tensor.diag(diagonal, offset: -1));
+  /// print(y);
+  /// //<Tensor(shape: [3, 3], values:
+  /// // [[0.0, 0.0, 0.0]
+  /// //  [1.0, 0.0, 0.0]
+  /// //  [0.0, 2.0, 0.0]], dType: float32)>
+  /// 
+  /// var t = Tensor.diag(diagonal, numCols: 3, numRows: 4);
+  /// print(t.shape); // [4, 3]
+  /// 
+  /// final batchDiag = [[1,2,3], [3,4,5]];
+  /// var v = Tensor.diag(batchDiag);
+  /// print(v.shape); // [2, 3, 3]
+  /// 
+  /// var v2 = Tensor.diag(batchDiag, offset: 1, numRows: 5);
+  /// print(v2.shape); // [2, 5, 4]
+  ///```
   factory Tensor.diag(List<dynamic> diagonal,
       {int offset = 0,
       int? numRows,
@@ -301,10 +335,26 @@ abstract class Tensor {
     }
   }
 
+  /// Returns [this] + [other] element-wise.
+  /// 
+  /// See concrete tensor implementations (like [NumericTensor]) for more.
   Tensor operator +(Object other);
+
+  /// Returns [this] - [other] element-wise.
+  /// 
+  /// See concrete tensor implementations (like [NumericTensor]) for more.
   Tensor operator -(Object other);
+
+  /// Returns [this] * [other] element-wise.
+  /// 
+  /// See concrete tensor implementations (like [NumericTensor]) for more.
   Tensor operator *(Object other);
+
+  /// Returns [this] / [other] element-wise.
+  /// 
+  /// See concrete tensor implementations (like [NumericTensor]) for more.
   Tensor operator /(Object other);
+
   Tensor operator -();
 
   @override
@@ -334,7 +384,7 @@ abstract class NumericTensor<L extends List> implements Tensor {
     } else if (other is NumericTensor) {
       return numericOperation(this, other, OperationType.add);
     } else {
-      throw ArgumentError('Expected num or NumericalTensor (of the same DType) as other, but received ${other.runtimeType}', 'other');
+      throw ArgumentError('Expected num or NumericTensor (of the same DType) as other, but received ${other.runtimeType}', 'other');
     }
   }
 
@@ -345,7 +395,7 @@ abstract class NumericTensor<L extends List> implements Tensor {
     } else if (other is NumericTensor) {
       return numericOperation(this, other, OperationType.subtract);
     } else {
-      throw ArgumentError('Expected num or NumericalTensor (of the same DType) as other, but received ${other.runtimeType}', 'other');
+      throw ArgumentError('Expected num or NumericTensor (of the same DType) as other, but received ${other.runtimeType}', 'other');
     }
   }
 
@@ -356,7 +406,7 @@ abstract class NumericTensor<L extends List> implements Tensor {
     } else if (other is NumericTensor) {
       return numericOperation(this, other, OperationType.multiply);
     } else {
-      throw ArgumentError('Expected num or NumericalTensor (of the same DType) as other, but received ${other.runtimeType}', 'other');
+      throw ArgumentError('Expected num or NumericTensor (of the same DType) as other, but received ${other.runtimeType}', 'other');
     }
   }
 
@@ -367,7 +417,7 @@ abstract class NumericTensor<L extends List> implements Tensor {
     } else if (other is NumericTensor) {
       return numericOperation(this, other, OperationType.divide);
     } else {
-      throw ArgumentError('Expected num or NumericalTensor (of the same DType) as other, but received ${other.runtimeType}', 'other');
+      throw ArgumentError('Expected num or NumericTensor (of the same DType) as other, but received ${other.runtimeType}', 'other');
     }
   }
 

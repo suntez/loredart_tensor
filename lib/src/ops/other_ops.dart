@@ -271,12 +271,15 @@ Tensor cast(Tensor x, DType dType) {
 /// Adds extra dim of length 1 into [x] at index [axis].
 /// 
 /// Operation support negative indexes for [axis].
+/// Like corresponding [func from TensorFlow](https://www.tensorflow.org/api_docs/python/tf/expand_dims),
+/// can only add one dim at the time.
 /// 
 /// Returns [Tensor] of the same [DType] as [x].
 /// 
 /// Example:
 /// ```dart
 /// Tensor x = Tensor.ones([2,3,4]);
+/// expandDims(x, 3).shape; // [2, 3, 4, 1]
 /// expandDims(x, -1).shape; // [2, 3, 4, 1]
 /// expandDims(x, -2).shape; // [2, 3, 1, 4]
 /// expandDims(x, 0).shape; // [1, 2, 3, 4]
@@ -284,18 +287,20 @@ Tensor cast(Tensor x, DType dType) {
 /// ```
 Tensor expandDims(Tensor x, int axis) {
   if (x is NumericTensor) {
-    if (axis >= x.rank || axis < -x.rank) {
-      throw ArgumentError('axis must be in the interval [-x.rank, +x.rank), but reiceved $axis', 'axis');
+    if (axis > x.rank || axis < -x.rank) {
+      throw ArgumentError('axis must be in the interval [-x.rank, +x.rank], but reiceved $axis', 'axis');
     }
-    axis %= x.rank;
+    axis %= x.rank+1;
     return Tensor.fromBuffer(x.buffer, List.from(x.shape.list)..insert(axis, 1), dType: x.dType);
   } else {
     throw ArgumentError('Expected NumericTensor as x, but reiceved ${x.runtimeType}', 'x');
   }
 }
 
-//TODO: update API for `axis` parameter
 /// Removes dimensions of size 1 from the shape of a [x].
+/// 
+/// By default, it removes all size 1 dims, but if one doesn't want to remove all size 1 dims,
+/// one can remove specific dims by specifying the [axis].
 /// 
 /// Return [Tensor] of the same [DType] of [x].
 /// 
@@ -319,7 +324,44 @@ Tensor squeeze(Tensor x, {List<int>? axis}) {
   }
 }
 
-
+/// Constructs and returns one-hot tensor.
+/// 
+/// The locations represented by [indices] take value [onValue], while all other locations take value [offValue].
+/// The [indices] must be an integer based [Tensor].
+/// 
+/// If the input [indices] is rank N, the output will have rank N+1, with extra dim created at dimension [axis] with size [depth].
+/// The [axis] must be between [-1, x.rank), otherwise will throw an ArgumentError.
+/// 
+/// If [dType] is not provided, it will attempt to assume the DType based on [onValue] and [offValue] (must be of the same type),
+/// otherwise [onValue] and [offValue] and [dType] must correspond to the same type.
+/// 
+/// [indices] may includes element outside the range [0, depth-1], in that case all values of the corresponding location will be set to [offValue].
+/// 
+/// Example 1:
+/// ```dart
+/// final indices = Tensor.constant([0, 1, 2, 1]);
+/// final onehot = oneHotTensor(indices, depth: 3);
+/// print(onehot);
+/// // <Tensor(shape: [4, 3], values:
+/// // [[1.0, 0.0, 0.0]
+/// //  [0.0, 1.0, 0.0]
+/// //  [0.0, 0.0, 1.0]
+/// //  [0.0, 1.0, 0.0]], dType: float32)>
+/// ```
+/// Example 2:
+/// ```dart
+///  final indices = Tensor.constant([0, 2, -1]);
+///  final onehot = oneHotTensor(
+///     indices, depth: 4,
+///     onValue: 5, offValue: -1,
+///     dType: DType.int32
+///  );
+///  print(onehot);
+/// // <Tensor(shape: [3, 4], values:
+/// // [[5, -1, -1, -1]
+/// //  [-1, -1, 5, -1]
+/// //  [-1, -1, -1, -1]], dType: int32)>
+/// ```
 Tensor oneHotTensor(Tensor indices, {required int depth, num onValue = 1.0, num offValue = 0.0, int axis = -1, DType? dType}) {
   if (!indices.dType.isInt) {
     throw ArgumentError('Indices tensor should be integer base, but received tensor of ${indices.dType}', 'indices');
@@ -347,15 +389,10 @@ Tensor oneHotTensor(Tensor indices, {required int depth, num onValue = 1.0, num 
     axis = indices.rank;
   }
   outputShape.insert(axis, depth);
-  print(axis);
-  print(outputShape);
-
   List buffer = emptyBuffer(dType, outputShape.reduce((e1,e2)=>e1*e2));
 
   int sizeBeforeAxis = outputShape.sublist(0, axis).reduce((e1, e2) => e1*e2);
-  print('bef: $sizeBeforeAxis');
   int sizeAfterAxis = axis == indices.rank ? 1 : outputShape.sublist(axis).reduce((e1, e2) => e1*e2);
-  print('bef: $sizeAfterAxis');
   indices as NumericTensor;
   for (int b = 0; b < sizeBeforeAxis; b += 1) {
     for (int a = 0; a < sizeAfterAxis; a += 1) {

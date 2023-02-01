@@ -1,7 +1,7 @@
 import 'dart:math' show sqrt;
 import '../tensors/tensor.dart';
 
-/// Computes `max` of a slice from [buffer] according to [reduce] and [axis]. 
+/// Computes the `max` of a slice from [buffer] according to [reduce] and [axis]. 
 num reduceMaxSlice(List buffer, List<int> reduce, List<int> cumDimsSize, List<int> axis, DType dType) {
   final List<int> shape = List.generate(reduce.length, (i) => axis.contains(i) ? reduce[i] : 1);
   final sliceSize = shape.reduce((e1, e2) => e1 * e2);
@@ -28,7 +28,7 @@ num reduceMaxSlice(List buffer, List<int> reduce, List<int> cumDimsSize, List<in
   return maxValue!;
 }
 
-/// Computes `min` of a slice from [buffer] according to [reduce] and [axis]. 
+/// Computes the `min` of a slice from [buffer] according to [reduce] and [axis]. 
 num reduceMinSlice(List buffer, List<int> reduce, List<int> cumDimsSize, List<int> axis, DType dType) {
   final List<int> shape = List.generate(reduce.length, (i) => axis.contains(i) ? reduce[i] : 1);
   final sliceSize = shape.reduce((e1, e2) => e1 * e2);
@@ -55,7 +55,7 @@ num reduceMinSlice(List buffer, List<int> reduce, List<int> cumDimsSize, List<in
   return minValue!;
 }
 
-/// Computes `local arg max` of a slice from [buffer] according to [reduce] and [axis]. 
+/// Computes the `local arg max` of a slice from [buffer] according to [reduce] and [axis]. 
 int reduceLocalArgMaxSlice(List buffer, List<int> reduce, List<int> cumDimsSize, List<int> axis, DType dType) {
   final List<int> shape = List.generate(reduce.length, (i) => axis.contains(i) ? reduce[i] : 1);
   final sliceSize = shape.reduce((e1, e2) => e1 * e2);
@@ -84,36 +84,7 @@ int reduceLocalArgMaxSlice(List buffer, List<int> reduce, List<int> cumDimsSize,
   return maxValueIndex;
 }
 
-/// Computes `global (flatten indices from original tensor) arg max` of a slice from [buffer] according to [reduce] and [axis]. 
-int reduceGlobalArgMaxSlice(List buffer, List<int> reduce, List<int> cumDimsSize, List<int> axis, [DType dType = DType.int32]) {
-  final List<int> shape = List.generate(reduce.length, (i) => axis.contains(i) ? reduce[i] : 1);
-  final sliceSize = shape.reduce((e1, e2) => e1 * e2);
-  num? maxValue;
-  int maxValueIndex = 0;
-  List<int> currentIndices = List<int>.filled(shape.length, 0);
-  int indexForTensor = 0;
-  for (int i = 0; i < sliceSize; i += 1) {
-    indexForTensor = 0;
-    int index = i;
-
-    for (int j = shape.length - 1; j >= 0; j -= 1) {
-      currentIndices[j] = index % shape[j];
-      index = index ~/ shape[j];
-    }
-
-    for (int k = 0; k < shape.length; k += 1) {
-      indexForTensor += cumDimsSize[k] * (axis.contains(k) ? currentIndices[k] : reduce[k]);
-    }
-
-    if (maxValue == null || maxValue < buffer[indexForTensor]) {
-      maxValue = buffer[indexForTensor];
-      maxValueIndex = indexForTensor;
-    }
-  } 
-  return maxValueIndex;
-}
-
-/// Computes `sum` of a slice from [buffer] according to [reduce] and [axis]. 
+/// Computes the `sum` of a slice from [buffer] according to [reduce] and [axis]. 
 num reduceSumSlice(List buffer, List<int> reduce, List<int> cumDimsSize, List<int> axis, DType dType) {
   final List<int> shape = List.generate(reduce.length, (i) => axis.contains(i) ? reduce[i] : 1);
   final sliceSize = shape.reduce((e1, e2) => e1 * e2);
@@ -138,7 +109,7 @@ num reduceSumSlice(List buffer, List<int> reduce, List<int> cumDimsSize, List<in
   return sumValue;
 }
 
-/// Computes `mean` of a slice from [buffer] according to [reduce] and [axis]. 
+/// Computes the `mean` of a slice from [buffer] according to [reduce] and [axis]. 
 num reduceMeanSlice(List buffer, List<int> reduce, List<int> cumDimsSize, List<int> axis, DType dType) {
   final List<int> shape = List.generate(reduce.length, (i) => axis.contains(i) ? reduce[i] : 1);
   final sliceSize = shape.reduce((e1, e2) => e1 * e2);
@@ -164,7 +135,7 @@ num reduceMeanSlice(List buffer, List<int> reduce, List<int> cumDimsSize, List<i
   return dType.isInt ? sumValue ~/ sliceSize : sumValue / sliceSize;
 }
 
-/// Computes `product` of a slice from [buffer] according to [reduce] and [axis]. 
+/// Computes the `product` of a slice from [buffer] according to [reduce] and [axis]. 
 num reduceProdSlice(List buffer, List<int> reduce, List<int> cumDimsSize, List<int> axis, DType dType) {
   final List<int> shape = List.generate(reduce.length, (i) => axis.contains(i) ? reduce[i] : 1);
   final sliceSize = shape.reduce((e1, e2) => e1 * e2);
@@ -190,7 +161,7 @@ num reduceProdSlice(List buffer, List<int> reduce, List<int> cumDimsSize, List<i
   return prodValue;
 }
 
-/// Computes `variance` of a slice from [buffer] according to [reduce] and [axis]. 
+/// Computes the `variance` of a slice from [buffer] according to [reduce] and [axis]. 
 num reduceVarianceSlice(List buffer, List<int> reduce, List<int> cumDimsSize, List<int> axis, DType dType) {
   final List<int> shape = List.generate(reduce.length, (i) => axis.contains(i) ? reduce[i] : 1);
   final sliceSize = shape.reduce((e1, e2) => e1 * e2);
@@ -218,7 +189,7 @@ num reduceVarianceSlice(List buffer, List<int> reduce, List<int> cumDimsSize, Li
   return dType.isInt ? (squareSumValue - (sumValue * sumValue / sliceSize)) ~/ sliceSize : (squareSumValue - (sumValue * sumValue / sliceSize)) / sliceSize;
 }
 
-/// Computes `standard deviation` of a slice from [buffer] according to [reduce] and [axis]. 
+/// Computes the `standard deviation` of a slice from [buffer] according to [reduce] and [axis]. 
 num reduceStdSlice(List buffer, List<int> reduce, List<int> cumDimsSize, List<int> axis, DType dType) {
   final List<int> shape = List.generate(reduce.length, (i) => axis.contains(i) ? reduce[i] : 1);
   final sliceSize = shape.reduce((e1, e2) => e1 * e2);
