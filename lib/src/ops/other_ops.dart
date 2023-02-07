@@ -1,5 +1,5 @@
+import '../tensors/num_tensor.dart';
 import '/src/utils/dtype_utils.dart';
-import '/src/tensors/int32list_num_tensor.dart';
 import '/src/tensors/tensor.dart';
 
 /// Concatenates [Tensor]s of [tensors] along one given dimension [axis].
@@ -27,18 +27,25 @@ import '/src/tensors/tensor.dart';
 /// //   [1.0, 2.0, 2.0]]], dType: float32)>
 /// ```
 Tensor concat(List<Tensor> tensors, {int axis = - 1}) {
-  if (tensors.isEmpty || tensors.any((element) => element is! NumericTensor || element.dType != tensors[0].dType || element.rank != tensors[0].rank)) {
-    throw ArgumentError('Expect non-empty list of NumericTensors with same DType and same rank', 'tensors');
+  if (tensors.isEmpty) {
+    throw ArgumentError("Expected non-empty list of tensors, but received $tensors", 'tensors');
+  }
+  if (tensors.any((element) => element.dType != tensors[0].dType)) {
+    throw ArgumentError("Tensors must be of the same DType, but received dTypes: ${tensors.map((e) => e.dType.name)}", 'tensors');
+  }
+  if (tensors.any((element) => element.rank != tensors[0].rank)) {
+    throw ArgumentError("Tensors must be of the same rank, but received ranks: ${tensors.map((e) => e.rank)}", 'tensors');
   }
   if (axis >= tensors[0].rank || axis < -tensors[0].rank) {
-    throw ArgumentError('axis must be in halp-interval [-rank, +rank), but reiceved $axis', 'axis');
+    throw RangeError.value(axis, 'axis', "Expected axis argument to be in rank range [-rank, rank)");
   }
+  
   axis %= tensors[0].rank;
 
   final List<List<int>> shapes = List.generate(tensors.length, (i) => List.from(tensors[i].shape.list)..removeAt(axis));
   for (int i = 0; i < tensors[0].rank-1; i += 1) {
     if (shapes.any((element) => element[i] != shapes[0][i])) {
-      throw ArgumentError('All dimensions in tensors shapes except axis must be equal', 'tensors');
+      throw ArgumentError('All dimensions in tensors shapes, except axis, must be equal', 'tensors');
     }
   }
 
@@ -70,7 +77,7 @@ Tensor concat(List<Tensor> tensors, {int axis = - 1}) {
       }
     }
   }
-  return Tensor.fromBuffer(buffer, shape, dType: tensors[0].dType);
+  return Tensor.fromTypedDataList(buffer, shape, dType: tensors[0].dType);
 }
 
 /// Extracts and returns strode slice of the tensor [x]
@@ -100,14 +107,14 @@ Tensor concat(List<Tensor> tensors, {int axis = - 1}) {
 /// ```
 Tensor slice(Tensor x, List<int> begin, List<int> end) {
   if (begin.length != x.rank || end.length != x.rank) {
-    throw ArgumentError('begin and end must have length = x.rank, but reiceved begin.length: ${begin.length}, end.length: ${end.length}, x.rank: ${x.rank}');
+    throw ArgumentError('begin and end must have length == x.rank, but received begin.length: ${begin.length}, end.length: ${end.length}, x.rank: ${x.rank}');
   }
   for (int i = 0; i < x.rank; i += 1) {
-    if (begin[i] < 0 || end[i] < 0) {
-      throw ArgumentError("Slicing doesn't support negative indices in the begin and the end of slice, but reiceved: $begin - $end");
+    if (begin[i] < 0 || begin[i] > end[i] ) {
+      throw RangeError.range(begin[i], 0, end[i], 'begin[$i]', "expected begin[i] to be between [0, end[i]]");
     }
-    if (begin[i] > end[i] || end[i] > x.shape[i]) {
-      throw ArgumentError("Invalid values of slice: begin[i] should be in [0, end[i]], while end[i] in [begin[i], x.shape[i]], but reiceved $begin - $end, with tensor shape: ${x.shape}");
+    if (end[i] < 0 || end[i] > x.shape[i]) {
+      throw RangeError.range(end[i], begin[i], x.shape[i], 'end[$i]', "expected end[i] to be between [begin[i], x.shape[i]]");
     }
   }
   if (x is NumericTensor) {
@@ -130,9 +137,9 @@ Tensor slice(Tensor x, List<int> begin, List<int> end) {
       }
       buffer[i] = x.buffer[indexForTensor];
     }
-    return Tensor.fromBuffer(buffer, shapeWith0.where((element) => element != 0).toList(), dType: x.dType);
+    return Tensor.fromTypedDataList(buffer, shapeWith0.where((element) => element != 0).toList(), dType: x.dType);
   } else {
-    throw UnimplementedError('Slicing is not supported for non-numeric tensors, but reiceved ${x.runtimeType}');
+    throw UnimplementedError('Slicing is not supported for non-numeric tensors, but received ${x.runtimeType}');
   }
 }
 
@@ -200,12 +207,12 @@ Tensor pad(Tensor x, Tensor padding, {num value = 0.0}) {
           buffer[i] = x.buffer[indexFromX];
         }
       }
-      return Tensor.fromBuffer(buffer, shape, dType: x.dType);
+      return Tensor.fromTypedDataList(buffer, shape, dType: x.dType);
     } else {
       throw ArgumentError('Expected Int32NumericTensor with rank 2 and shape [n, 2], where n == x.rank', 'padding');
     }
   } else {
-    throw ArgumentError('Expected NumericTensors as input x and Int32NumericTensor as padding, but reiceved x: ${x.runtimeType} and padding: ${padding.runtimeType}');
+    throw ArgumentError('Expected NumericTensors as input x and Int32NumericTensor as padding, but received x: ${x.runtimeType} and padding: ${padding.runtimeType}');
   }
 }
 
@@ -230,7 +237,7 @@ Tensor pad(Tensor x, Tensor padding, {num value = 0.0}) {
 Tensor reshape(Tensor x, List<int> shape) {
   if (x.shape.size == shape.reduce((e1, e2) => e1*e2)) {
     if (x is NumericTensor) {
-      return Tensor.fromBuffer(x.buffer, shape, dType: x.dType);
+      return Tensor.fromTypedDataList(x.buffer, shape, dType: x.dType);
     } else {
       throw ArgumentError('Reshape is not supported for ${x.runtimeType}');
     }
@@ -256,13 +263,13 @@ Tensor reshape(Tensor x, List<int> shape) {
 Tensor cast(Tensor x, DType dType) {
   if (x is NumericTensor) {
     if (!dType.isNumeric) {
-      throw ArgumentError('Cannot cast NumericTensor into non-numeric ($dType)', 'dType');
+      throw ArgumentError('Cannot cast NumericTensor into non-numeric, received $dType', 'dType');
     }
     List buffer = emptyBuffer(dType, x.shape.size);
     for (int i = 0; i < x.shape.size; i += 1) {
       buffer[i] = dType.isInt ? (x.buffer[i] as num).toInt() : (x.buffer[i] as num).toDouble();
     }
-    return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+    return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
   } else {
     throw UnimplementedError('Casting is not supported for ${x.runtimeType}');
   }
@@ -288,12 +295,12 @@ Tensor cast(Tensor x, DType dType) {
 Tensor expandDims(Tensor x, int axis) {
   if (x is NumericTensor) {
     if (axis > x.rank || axis < -x.rank) {
-      throw ArgumentError('axis must be in the interval [-x.rank, +x.rank], but reiceved $axis', 'axis');
+      throw RangeError.value(axis, 'axis', "Expected axis argument to be in rank range [-${x.rank}, ${x.rank})");
     }
     axis %= x.rank+1;
-    return Tensor.fromBuffer(x.buffer, List.from(x.shape.list)..insert(axis, 1), dType: x.dType);
+    return Tensor.fromTypedDataList(x.buffer, List.from(x.shape.list)..insert(axis, 1), dType: x.dType);
   } else {
-    throw ArgumentError('Expected NumericTensor as x, but reiceved ${x.runtimeType}', 'x');
+    throw ArgumentError('Expected NumericTensor as x, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -313,14 +320,14 @@ Tensor expandDims(Tensor x, int axis) {
 Tensor squeeze(Tensor x, {List<int>? axis}) {
   axis ??= List.generate(x.rank, (i) => i);
   if (axis.any((e) => e <= -x.rank || e > x.rank)) {
-    throw ArgumentError();
+    throw RangeError("The axis element(s) out of rank range [-${x.rank}, ${x.rank}), received $axis");
   }
   axis = axis.map((e) => e%x.rank).toList();
   if (x is NumericTensor) {
     final shape = [for (int i = 0; i < x.rank; i += 1) if (!(axis.contains(i) && x.shape[i] == 1)) x.shape[i]];
-    return Tensor.fromBuffer(x.buffer, shape, dType: x.dType);
+    return Tensor.fromTypedDataList(x.buffer, shape, dType: x.dType);
   } else {
-    throw ArgumentError('Expected NumericTensor as x, but reiceved ${x.runtimeType}', 'x');
+    throw ArgumentError('Expected NumericTensor as x, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -405,5 +412,5 @@ Tensor oneHotTensor(Tensor indices, {required int depth, num onValue = 1.0, num 
       }
     }
   }
-  return Tensor.fromBuffer(buffer, outputShape, dType: dType);
+  return Tensor.fromTypedDataList(buffer, outputShape, dType: dType);
 }

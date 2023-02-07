@@ -1,11 +1,9 @@
 import 'dart:math' as math;
 
+import '../tensors/num_tensor.dart';
 import '../utils/math_utils.dart' as hyperbolic;
 import '../tensors/tensor.dart';
 import '../utils/dtype_utils.dart';
-
-// Implemented operations: abs, exp, expm1, sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, log, log2, log1p, xlogy, xlog1p, sqrt, square, pow, softplus, softminus 
-
 
 /// Applies [func] on [x] element-wise.
 /// 
@@ -19,10 +17,10 @@ Tensor apply(Tensor x, num Function(num) func, {DType? dType}) {
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = func(x.buffer[i]);
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -36,10 +34,10 @@ Tensor abs(Tensor x) {
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = (x.buffer[i] as num).abs();
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: x.dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: x.dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -55,10 +53,10 @@ Tensor exp(Tensor x) {
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = math.exp(x.buffer[i]);
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -74,10 +72,10 @@ Tensor expm1(Tensor x) {
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = math.exp(x.buffer[i])-1;
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -93,10 +91,10 @@ Tensor sin(Tensor x) {
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = math.sin(x.buffer[i]);
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -112,10 +110,10 @@ Tensor cos(Tensor x) {
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = math.cos(x.buffer[i]);
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -131,10 +129,10 @@ Tensor tan(Tensor x) {
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = math.tan(x.buffer[i]);
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -150,10 +148,10 @@ Tensor acos(Tensor x) {
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = math.acos(x.buffer[i]);
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -169,10 +167,10 @@ Tensor asin(Tensor x) {
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = math.asin(x.buffer[i]);
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -188,10 +186,10 @@ Tensor atan(Tensor x) {
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = math.atan(x.buffer[i]);
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -207,10 +205,10 @@ Tensor sinh(Tensor x) {
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = hyperbolic.sinh(x.buffer[i]);
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -226,10 +224,10 @@ Tensor cosh(Tensor x) {
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = hyperbolic.cosh(x.buffer[i]);
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -245,10 +243,10 @@ Tensor tanh(Tensor x) {
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = hyperbolic.tanh(x.buffer[i]);
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -264,10 +262,10 @@ Tensor sech(Tensor x) {
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = hyperbolic.sech(x.buffer[i]);
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -283,10 +281,10 @@ Tensor log(Tensor x) {
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = math.log(x.buffer[i]);
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -304,10 +302,10 @@ Tensor log1p(Tensor x) {
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = math.log(x.buffer[i] + 1.0);
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -323,10 +321,10 @@ Tensor log2(Tensor x) {
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = math.log(x.buffer[i]) / math.log2e;
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -342,10 +340,10 @@ Tensor sqrt(Tensor x) {
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = math.sqrt(x.buffer[i]);
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -359,10 +357,10 @@ Tensor square(Tensor x) {
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = x.buffer[i] * x.buffer[i];
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: x.dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: x.dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -381,17 +379,17 @@ Tensor pow(Tensor x, Object exponent) {
         for (int i = 0; i < x.shape.size; i += 1) {
           buffer[i] = math.pow(x.buffer[i], exponent);
         }
-      } else if (exponent is NumericTensor && x.shape.equalWith(exponent.shape)) {
+      } else if (exponent is NumericTensor && x.shape.equalTo(exponent.shape)) {
         for (int i = 0; i < x.shape.size; i += 1) {
           buffer[i] = math.pow(x.buffer[i], exponent.buffer[i]);
         }
       } else {
-        throw ArgumentError('Expected NumericTensor with same shape or number for exponent arg, but got ${exponent.runtimeType}');
+        throw ArgumentError('Expected NumericTensor with same shape or number for exponent arg, but received ${exponent.runtimeType}');
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -408,10 +406,10 @@ Tensor sign(Tensor x) {
           buffer[i] = x.buffer[i] > 0.0 ? 1.0 : x.buffer[i] == 0.0 ? 0.0 : -1.0;
         }
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: x.dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: x.dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -429,10 +427,10 @@ Tensor sigmoid(Tensor x) {
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = 1/(1 + math.exp(-x.buffer[i]));
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -450,10 +448,10 @@ Tensor softplus(Tensor x) {
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = math.log(math.exp(x.buffer[i])+1);
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -471,10 +469,10 @@ Tensor softminus(Tensor x) {
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = x.buffer[i] -  math.log(math.exp(x.buffer[i])+1);
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -485,19 +483,19 @@ Tensor softminus(Tensor x) {
 /// [x] and [y] expected to be [NumericTensor]s of the same [DType] with equal [TensorShapes], otherwise will throw an ArgumentError.
 Tensor squareDifference(Tensor x, Tensor y) {
   if (x is NumericTensor && y is NumericTensor && x.dType == y.dType) {
-      if (x.shape.equalWith(y.shape)) {
+      if (x.shape.equalTo(y.shape)) {
       final dType = (x.dType == DType.float64 && y.dType == DType.float64) ? DType.float64 : DType.float32;
       List buffer = emptyBuffer(dType, x.shape.size);
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = (x.buffer[i] - y.buffer[i])*(x.buffer[i] - y.buffer[i]);
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
     } else {
-      throw ArgumentError('Arguments must have equal shapes( ${x.shape} != ${y.shape})');
+      throw ArgumentError('Operands must be of the same shape, but received x.shape: ${x.shape}, y.shape: ${y.shape}');
     }
   } else {
     throw ArgumentError(
-        'Expected NumericTensor(s) with same DType, but got x: ${x.runtimeType} and y: ${y.runtimeType}');
+        'Expected NumericTensors of the same DType, but received x: ${x.runtimeType} and y: ${y.runtimeType}');
   }
 }
 
@@ -510,19 +508,19 @@ Tensor squareDifference(Tensor x, Tensor y) {
 /// [x] and [y] expected to be [NumericTensor]s of the same [DType] with equal [TensorShapes], otherwise will throw an ArgumentError.
 Tensor xlogy(Tensor x, Tensor y) {
   if (x is NumericTensor && y is NumericTensor && x.dType == y.dType) {
-      if (x.shape.equalWith(y.shape)) {
+      if (x.shape.equalTo(y.shape)) {
       final dType = (x.dType == DType.float64 && y.dType == DType.float64) ? DType.float64 : DType.float32;
       List buffer = emptyBuffer(dType, x.shape.size);
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = x.buffer[i] == 0 ? (dType.isInt ? 0 : 0.0) : x.buffer[i] * math.log(y.buffer[i]);
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
     } else {
-      throw ArgumentError('Arguments must have equal shapes( ${x.shape} != ${y.shape})');
+      throw ArgumentError('Operands must be of the same shape, but received x.shape: ${x.shape}, y.shape: ${y.shape}');
     }
   } else {
     throw ArgumentError(
-        'Expected NumericTensor(s) with same DType, but got x: ${x.runtimeType} and y: ${y.runtimeType}');
+        'Expected NumericTensors of the same DType, but received x: ${x.runtimeType} and y: ${y.runtimeType}');
   }
 }
 
@@ -535,19 +533,19 @@ Tensor xlogy(Tensor x, Tensor y) {
 /// [x] and [y] expected to be [NumericTensor]s of the same [DType] with equal [TensorShape]s, otherwise will throw an ArgumentError.
 Tensor xlog1py(Tensor x, Tensor y) {
   if (x is NumericTensor && y is NumericTensor && x.dType == y.dType) {
-      if (x.shape.equalWith(y.shape)) {
+      if (x.shape.equalTo(y.shape)) {
       final dType = (x.dType == DType.float64 && y.dType == DType.float64) ? DType.float64 : DType.float32;
       List buffer = emptyBuffer(dType, x.shape.size);
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = x.buffer[i] == 0 ? 0 : x.buffer[i] * math.log(y.buffer[i]+1);
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
     } else {
-      throw ArgumentError('Arguments must have equal shapes( ${x.shape} != ${y.shape})');
+      throw ArgumentError('Operands must be of the same shape, but received x.shape: ${x.shape}, y.shape: ${y.shape}');
     }
   } else {
     throw ArgumentError(
-        'Expected NumericTensor(s) with same DType, but got x: ${x.runtimeType} and y: ${y.runtimeType}');
+        'Expected NumericTensors of the same DType, but received x: ${x.runtimeType} and y: ${y.runtimeType}');
   }
 }
 
@@ -558,19 +556,19 @@ Tensor xlog1py(Tensor x, Tensor y) {
 /// [x] and [y] expected to be [NumericTensor]s of the same [DType] with equal [TensorShapes], otherwise will throw an ArgumentError.
 Tensor max(Tensor x, Tensor y) {
   if (x is NumericTensor && y is NumericTensor && x.dType == y.dType) {
-      if (x.shape.equalWith(y.shape)) {
+      if (x.shape.equalTo(y.shape)) {
       final dType = x.dType;
       List buffer = emptyBuffer(dType, x.shape.size);
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = x.buffer[i] >= y.buffer[i] ? x.buffer[i] : y.buffer[i];
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
     } else {
-      throw ArgumentError('Arguments must have equal shapes( ${x.shape} != ${y.shape})');
+      throw ArgumentError('Operands must be of the same shape, but received x.shape: ${x.shape}, y.shape: ${y.shape}');
     }
   } else {
     throw ArgumentError(
-        'Expected NumericTensor(s) with same DType, but got x: ${x.runtimeType} and y: ${y.runtimeType}');
+        'Expected NumericTensors of the same DType, but received x: ${x.runtimeType} and y: ${y.runtimeType}');
   }
 }
 
@@ -581,19 +579,19 @@ Tensor max(Tensor x, Tensor y) {
 /// [x] and [y] expected to be [NumericTensor]s of the same [DType] with equal [TensorShapes], otherwise will throw an ArgumentError.
 Tensor min(Tensor x, Tensor y) {
   if (x is NumericTensor && y is NumericTensor && x.dType == y.dType) {
-      if (x.shape.equalWith(y.shape)) {
+      if (x.shape.equalTo(y.shape)) {
       final dType = x.dType;
       List buffer = emptyBuffer(dType, x.shape.size);
       for (int i = 0; i < x.shape.size; i += 1) {
         buffer[i] = x.buffer[i] <= y.buffer[i] ? x.buffer[i] : y.buffer[i];
       }
-      return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+      return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
     } else {
-      throw ArgumentError('Arguments must have equal shapes( ${x.shape} != ${y.shape})');
+      throw ArgumentError('Operands must be of the same shape, but received x.shape: ${x.shape}, y.shape: ${y.shape}');
     }
   } else {
     throw ArgumentError(
-        'Expected NumericTensor(s) with same DType, but got x: ${x.runtimeType} and y: ${y.runtimeType}');
+        'Expected NumericTensors of the same DType, but received x: ${x.runtimeType} and y: ${y.runtimeType}');
   }
 }
 
@@ -610,7 +608,7 @@ Tensor maximum(Tensor x) {
     return Tensor.constant([maximumNum], dType: x.dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -627,7 +625,7 @@ Tensor minimum(Tensor x) {
     return Tensor.constant([minimumNum], dType: x.dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -647,7 +645,7 @@ Tensor mean(Tensor x, {DType? dType}) {
     return Tensor.constant([sum / x.shape.size], dType: dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }
 
@@ -669,6 +667,6 @@ Tensor variance(Tensor x, {DType? dType}) {
     return Tensor.constant([(squareSum - (sum*sum /  x.shape.size)) / x.shape.size], dType: dType);
   } else {
     throw ArgumentError(
-        'Expected NumericTensor, but got ${x.runtimeType}', 'x');
+        'Expected NumericTensor, but received ${x.runtimeType}', 'x');
   }
 }

@@ -1,7 +1,8 @@
+import '../tensors/num_tensor.dart';
 import '/src/ops/other_ops.dart' show reshape;
 import '/src/utils/dtype_utils.dart';
 import '/src/tensors/tensor.dart';
-import 'basic_ops.dart' show broadcastCompShapes;
+import 'basic_ops.dart' show broadcastShapes;
 
 // The type of the comparison operation
 enum ComparisonType {equal, notEqual, greater, greaterEqual, less, lessEqual}
@@ -59,7 +60,7 @@ Tensor compareWithScalar(NumericTensor x, num scalar, {required ComparisonType t
       buffer[i] = x.dType.isInt ? 1 : 1.0;
     }
   }
-  return Tensor.fromBuffer(buffer, x.shape.list, dType: x.dType);
+  return Tensor.fromTypedDataList(buffer, x.shape.list, dType: x.dType);
 }
 
 /// Compare two numeric tensors [x] and [other] element-wise according to the comparison [type]
@@ -73,7 +74,7 @@ Tensor compareWithEqualShapes(NumericTensor x, NumericTensor other, {required Co
       buffer[i] = dType.isInt ? 1 : 1.0;
     }
   }
-  return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+  return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
 }
 
 /// Compare two numeric tensors [x] and [other] element-wise according to the comparison [type]
@@ -81,7 +82,7 @@ Tensor compareWithEqualShapes(NumericTensor x, NumericTensor other, {required Co
 /// Tensors are assumed to have compatible shapes
 Tensor compareWithCompShapes(NumericTensor x, NumericTensor other, {required ComparisonType type}) {
   final dType = dTypeDecision(x.dType, other.dType);
-  final List<int> shape = broadcastCompShapes(x.shape, other.shape);
+  final List<int> shape = broadcastShapes(x.shape, other.shape);
   final int length = shape.reduce((a,b) => a*b);
 
   final List<int> cumProdT = List<int>.generate(shape.length, (i) => i == shape.length-1 ? 1 : (x.shape[i] == 1 ? 0 : x.shape.list.sublist(i+1).reduce((e1, e2) => e1*e2)));
@@ -107,7 +108,7 @@ Tensor compareWithCompShapes(NumericTensor x, NumericTensor other, {required Com
       buffer[i] = dType.isInt ? 1 : 1.0;
     }
   }
-  return Tensor.fromBuffer(buffer, shape, dType: dType);
+  return Tensor.fromTypedDataList(buffer, shape, dType: dType);
 }
 
 /// Compare two numeric tensors [x] and [other] element-wise according to the comparison [type]
@@ -128,7 +129,7 @@ Tensor compareWithLastDims(NumericTensor x, NumericTensor other, {required Compa
       }
     }
   }
-  return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+  return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
 }
 
 /// If can - converts [y] to the [NumericTensor], otherwise throws an ArgumentError

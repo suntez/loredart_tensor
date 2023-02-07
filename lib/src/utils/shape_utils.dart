@@ -1,3 +1,6 @@
+/// Returns the shape of the nested lists of [values]
+/// 
+/// All nested list must be of the same length, otherwise will throw an ArgumentError.
 List<int> extractDimsFromNestedValues(List<dynamic> values) {
   List<int> shape = [];
   while (true) {
@@ -5,7 +8,7 @@ List<int> extractDimsFromNestedValues(List<dynamic> values) {
     if (values[0] is List) {
       try {
         if (values.any((element) => element.length != values[0].length)) {
-          throw ArgumentError('All lists must have equal number of elements');
+          throw ArgumentError('All lists must have equal number of elements', 'values');
         }
         values = values[0];
       } catch(e) {
@@ -18,14 +21,17 @@ List<int> extractDimsFromNestedValues(List<dynamic> values) {
   return shape;
 }
 
-List flattenList(List list) {
-  if (list.every((element) => element is List)) {
-    final flattenLists = [for (final values in list) ...flattenList(values)];
+/// Recursively flatten nested [values].
+/// 
+/// The elements of the flatten list must be of the same type, otherwise will throw an ArgumentError.
+List flattenList(List values) {
+  if (values.every((element) => element is List)) {
+    final flattenLists = [for (final value in values) ...flattenList(value)];
     return flattenLists;
   } else {
-    if (list.any((element) => element.runtimeType != list[0].runtimeType)) {
-      throw ArgumentError('All entities must have the same Type');
+    if (values.any((element) => element.runtimeType != values[0].runtimeType)) {
+      throw ArgumentError('All entities of values must have the same Type', 'values');
     }
-    return list;
+    return values;
   }
 }

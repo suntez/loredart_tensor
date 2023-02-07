@@ -98,11 +98,3 @@ Tensor truncatedNormal(List<int> shape, {num mean = 0.0, num std = 1.0, DType dT
     throw ArgumentError('DType $dType is not supported for normal random generation', 'dType');
   }
 }
-
-//TODO: to RandomTensor or not ?
-/// The collection of a method to output a random [Tensor] from different distributions.
-class RandomTensor {
-  static uniform(List<int> shape, {num min = 0.0, num max = 1.0, DType dType = DType.float32, int? seed}) => uniform(shape, min: min, max: max, dType: dType, seed: seed);
-  static normal(List<int> shape, {num mean = 0.0, num std = 1.0, DType dType = DType.float32, int? seed}) => normal(shape, mean: mean, std:std, dType: dType, seed: seed);
-  static truncatedNormal(List<int> shape, {num mean = 0.0, num std = 1.0, DType dType = DType.float32, int? seed}) => truncatedNormal(shape, mean: mean, std:std, dType: dType, seed: seed);
-}

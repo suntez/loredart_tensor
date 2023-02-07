@@ -1,7 +1,8 @@
 import 'dart:typed_data';
 import '../tensors/tensor.dart';
 
-
+/// Checks if [dType1] == [dTypes2] and returns corresponding [DType], 
+/// otherwise will throw an ArgumentError.
 DType dTypeDecision(DType dType1, DType dType2) {
   if (dType1 == dType2) {
     return dType1;
@@ -10,11 +11,16 @@ DType dTypeDecision(DType dType1, DType dType2) {
   }
 }
 
+/// Returns the resulting [DType] of the operation on the Tensor of [dType] and num of [type].
+/// 
+/// If there there is no compatible combination of [dType] and [type] throws an UnsupportedError.
 DType dTypeAndNumDecision(DType dType, Type type, [bool tensorInitialization = false]) {
   if ((dType == DType.float32) && type == double) {
     return DType.float32;
   } else if (dType == DType.float64 && type == double) {
     return DType.float64;
+  } else if (dType == DType.uint8 && type == int) {
+    return DType.int32;
   } else if (dType == DType.int32 && type == int) {
     return DType.int32;
   } else if (dType == DType.int64 && type == int) {
@@ -30,11 +36,14 @@ DType dTypeAndNumDecision(DType dType, Type type, [bool tensorInitialization = f
   }
 }
 
+/// Returns an empty TypedData list of the given [length] according to the [dType].
 List emptyBuffer(DType dType, int length) {
   if (dType == DType.float32) {
     return Float32List(length);
   } else if (dType == DType.float64) {
     return Float64List(length);
+  } else if (dType == DType.uint8) {
+    return Uint8List(length);
   } else if (dType == DType.int32) {
     return Int32List(length);
   } else if (dType == DType.int64) {
@@ -45,3 +54,19 @@ List emptyBuffer(DType dType, int length) {
   }
 }
 
+/// Convert [byteBuffer] into a TypedData list according to the [dType].
+List convertBufferToTypedDataList(ByteBuffer byteBuffer, DType dType) {
+  if (dType == DType.float32) {
+    return byteBuffer.asFloat32List();
+  } else if (dType == DType.float64) {
+    return byteBuffer.asFloat64List();
+  } else if (dType == DType.uint8) {
+    return byteBuffer.asUint8List();
+  } else if (dType == DType.int32) {
+    return byteBuffer.asInt32List();
+  } else if (dType == DType.int64) {
+    return byteBuffer.asInt64List();
+  } else {
+    throw UnsupportedError('DType $dType is not supported');
+  }
+}

@@ -1,25 +1,30 @@
 import 'dart:typed_data';
 
+import 'num_tensor.dart';
+import 'tensor_shape.dart';
+
 import '/src/utils/diagonal_utils.dart';
 import '/src/utils/shape_utils.dart';
 
-import '../ops/basic_ops.dart';
-import 'float32list_num_tensor.dart';
-import 'float64list_num_tensor.dart';
-import 'int32list_num_tensor.dart';
-import 'int64list_num_tensor.dart';
-import 'tensor_shape.dart';
 
 
 /// The data types of the elements in a [Tensor].
 /// 
-/// `bool` and `string` data types aren't supported yet
-enum DType { float32, float64, int32, int64, string, bool }
+/// `bool` and `string` data types aren't supported yet.
+enum DType {
+  float32,
+  float64,
+  uint8,
+  int32,
+  int64,
+  string,
+  bool
+}
 
-/// The data types of the elements in a [Tensor].
+/// The types of the [DType] data types.
 extension DTypeTypes on DType {
   /// True if [this] is integer-based type
-  bool get isInt => this == DType.int32 || this == DType.int64;
+  bool get isInt => this == DType.uint8 || this == DType.int32 || this == DType.int64;
 
   /// True if [this] is double-based type
   bool get isDouble => this == DType.float32 || this == DType.float64;
@@ -38,10 +43,16 @@ const Map<Type, DType> defaultTypesToDTypes = {
 
 /// The representation of a multidimensional array of elements of a single type.
 /// 
-/// Each [Tensor] charactirizes by it's [DType] and [shape].
+/// Each [Tensor] is described by two main properties:
+/// - [shape]
+/// - single [dType]
 /// 
+/// [Tensor]s are considered immutable and any operation with them will produce the new instance of [Tensor] class.
 /// 
+/// See concrete [Tensor] implementations for more details:
+/// - [NumericTensor] for numeric [DTypes]
 abstract class Tensor {
+  
   /// The shape of the [Tensor].
   late final TensorShape shape;
 
@@ -55,14 +66,14 @@ abstract class Tensor {
 
   /// Creates [Tensor] from [values].
   /// 
-  /// [values] may be list of [num] or have a multidimensional structure. Non-numerical lists aren't supported yet.
+  /// [values] may be list of [num] or have a multidimensional (nested) structure. Non-numerical lists aren't supported yet.
   /// 
   /// If [shape] is specified, tries to reshape elements to match it, otherwise inherits shape from [values].
   /// If number of elements of [values] won't be equal to [shape.size] throws an [ArgumentError].
   /// 
   /// If [dType] is specified, casts elements of [value] to meet the type, otherwise will inherit [dType] according to `defaultTypesToDTypes`.
   /// 
-  /// If [values] contains non-numerical elements or nested lists have non-equal length will throw an [ArgumentError].
+  /// If [values] contains non-numerical elements, elements of different type, or nested lists have non-equal length - will throw an [ArgumentError].
   /// 
   /// Examples:
   /// ```dart
@@ -99,25 +110,28 @@ abstract class Tensor {
     final flatten = flattenList(values);
     shape ??= extractDimsFromNestedValues(values);
     dType ??= defaultTypesToDTypes[flatten[0].runtimeType];
+
     if (shape.reduce((e1,e2) => e1*e2) == flatten.length) {
       if (dType == DType.float32) {
-        return Float32NumericTensor.fromBuffer(
+        return Float32NumericTensor.fromTypedDataList(
             Float32List.fromList(List.generate(flatten.length, (i) => flatten[i].toDouble(), growable: false)), shape);
       } else if (dType == DType.float64) {
-        return Float64NumericTensor.fromBuffer(
+        return Float64NumericTensor.fromTypedDataList(
             Float64List.fromList(List.generate(flatten.length, (i) => flatten[i].toDouble(), growable: false)), shape);
+      } else if (dType == DType.uint8) {
+        return Uint8NumericTensor.fromTypedDataList(
+            Uint8List.fromList(List.generate(flatten.length, (i) => flatten[i].toInt(), growable: false)), shape);
       } else if (dType == DType.int32) {
-        return Int32NumericTensor.fromBuffer(
+        return Int32NumericTensor.fromTypedDataList(
             Int32List.fromList(List.generate(flatten.length, (i) => flatten[i].toInt(), growable: false)), shape);
       } else if (dType == DType.int64) {
-        return Int64NumericTensor.fromBuffer(
+        return Int64NumericTensor.fromTypedDataList(
             Int64List.fromList(List.generate(flatten.length, (i) => flatten[i].toInt(), growable: false)), shape);
       } else {
-        throw ArgumentError(
-            'DType $dType is not supported for Tensor.constant factory', 'dType');
+        throw UnsupportedError('DType $dType is not supported for Tensor.constant factory');
       }
     } else {
-      throw ArgumentError('Cannot construct Tensor with ${flatten.length} elements with shape $shape', 'shape');
+      throw ArgumentError('Cannot construct Tensor with ${flatten.length} elements of the shape $shape', 'shape');
     }
   }
 
@@ -138,6 +152,8 @@ abstract class Tensor {
       return Float32NumericTensor.zeros(shape);
     } else if (dType == DType.float64) {
       return Float64NumericTensor.zeros(shape);
+    } else if (dType == DType.uint8) {
+      return Uint8NumericTensor.zeros(shape);
     } else if (dType == DType.int32) {
       return Int32NumericTensor.zeros(shape);
     } else if (dType == DType.int64) {
@@ -148,22 +164,29 @@ abstract class Tensor {
     }
   }
 
-  factory Tensor.fromBuffer(List buffer, List<int> shape,
+  /// Creates a [Tensor] of the [dType] with [shape] and elements from TypedData [buffer].
+  /// 
+  /// Assumes that [buffer] runtimeType is consistent with [dType] and [shape.size];
+  /// 
+  /// Throws an [ArgumentError] if [dType] is non-numeric.
+  factory Tensor.fromTypedDataList(List buffer, List<int> shape,
       {required DType dType}) {
     if (buffer.length != shape.reduce((e1,e2)=>e1*e2)) {
       throw ArgumentError('Cannot allocate ${buffer.length} elements into shape $shape');
     }
     if (dType == DType.float32) {
-      return Float32NumericTensor.fromBuffer(buffer as Float32List, shape);
+      return Float32NumericTensor.fromTypedDataList(buffer as Float32List, shape);
     } else if (dType == DType.float64) {
-      return Float64NumericTensor.fromBuffer(buffer as Float64List, shape);
+      return Float64NumericTensor.fromTypedDataList(buffer as Float64List, shape);
+    } else if (dType == DType.uint8) {
+      return Uint8NumericTensor.fromTypedDataList(buffer as Uint8List, shape);
     } else if (dType == DType.int32) {
-      return Int32NumericTensor.fromBuffer(buffer as Int32List, shape);
+      return Int32NumericTensor.fromTypedDataList(buffer as Int32List, shape);
     } else if (dType == DType.int64) {
-      return Int64NumericTensor.fromBuffer(buffer as Int64List, shape);
+      return Int64NumericTensor.fromTypedDataList(buffer as Int64List, shape);
     } else {
       throw ArgumentError(
-          'DType $dType is not supported for Tensor.fromBuffer', 'dType');
+          'DType $dType is not supported for Tensor.fromTypedDataList', 'dType');
     }
   }
 
@@ -208,6 +231,9 @@ abstract class Tensor {
     } else if (dType == DType.float64) {
       return Float64NumericTensor.eye(
           numRows, numCols ?? numRows, batchShape ?? []);
+    } else if (dType == DType.uint8) {
+      return Uint8NumericTensor.eye(
+          numRows, numCols ?? numRows, batchShape ?? []);
     } else if (dType == DType.int32) {
       return Int32NumericTensor.eye(
           numRows, numCols ?? numRows, batchShape ?? []);
@@ -249,6 +275,8 @@ abstract class Tensor {
       return Float32NumericTensor.fill(shape, (value as num).toDouble());
     } else if (dType == DType.float64) {
       return Float64NumericTensor.fill(shape, (value as num).toDouble());
+    } else if (dType == DType.uint8) {
+      return Uint8NumericTensor.fill(shape, (value as num).toInt());
     } else if (dType == DType.int32) {
       return Int32NumericTensor.fill(shape, (value as num).toInt());
     } else if (dType == DType.int64) {
@@ -276,6 +304,8 @@ abstract class Tensor {
       return Float32NumericTensor.ones(shape);
     } else if (dType == DType.float64) {
       return Float64NumericTensor.ones(shape);
+    } else if (dType == DType.uint8) {
+      return Uint8NumericTensor.ones(shape);
     } else if (dType == DType.int32) {
       return Int32NumericTensor.ones(shape);
     } else if (dType == DType.int64) {
@@ -337,137 +367,33 @@ abstract class Tensor {
 
   /// Returns [this] + [other] element-wise.
   /// 
-  /// See concrete tensor implementations (like [NumericTensor]) for more.
+  /// See concrete tensor implementations (like [NumericTensor]) for more info.
   Tensor operator +(Object other);
 
   /// Returns [this] - [other] element-wise.
   /// 
-  /// See concrete tensor implementations (like [NumericTensor]) for more.
+  /// See concrete tensor implementations (like [NumericTensor]) for more info.
   Tensor operator -(Object other);
 
   /// Returns [this] * [other] element-wise.
   /// 
-  /// See concrete tensor implementations (like [NumericTensor]) for more.
+  /// See concrete tensor implementations (like [NumericTensor]) for more info.
   Tensor operator *(Object other);
 
   /// Returns [this] / [other] element-wise.
   /// 
-  /// See concrete tensor implementations (like [NumericTensor]) for more.
+  /// See concrete tensor implementations (like [NumericTensor]) for more info.
   Tensor operator /(Object other);
 
+  /// Returns element-wise negative of [this].
+  /// 
+  /// See concrete tensor implementations (like [NumericTensor]) for more info.
   Tensor operator -();
 
   @override
-  String toString() {
-    return '<Tensor(shape: $shape, dtype: $dType)>';
-  }
+  String toString() => toStringShort();
 
   String toStringShort() {
     return '<Tensor(shape: $shape, dtype: $dType)>';
-  }
-}
-
-abstract class NumericTensor<L extends List> implements Tensor {
-  late final L buffer;
-  @override
-  late final TensorShape shape;
-  @override
-  late final DType dType;
-
-  @override
-  int get rank => shape.rank;
-
-  @override
-  Tensor operator +(Object other) {
-    if (other is num) {
-      return addScalar(this, other);
-    } else if (other is NumericTensor) {
-      return numericOperation(this, other, OperationType.add);
-    } else {
-      throw ArgumentError('Expected num or NumericTensor (of the same DType) as other, but received ${other.runtimeType}', 'other');
-    }
-  }
-
-  @override
-  Tensor operator -(Object other) {
-    if (other is num) {
-      return subtractScalar(this, other);
-    } else if (other is NumericTensor) {
-      return numericOperation(this, other, OperationType.subtract);
-    } else {
-      throw ArgumentError('Expected num or NumericTensor (of the same DType) as other, but received ${other.runtimeType}', 'other');
-    }
-  }
-
-  @override
-  Tensor operator *(Object other) {
-    if (other is num) {
-      return multiplyScalar(this, other);
-    } else if (other is NumericTensor) {
-      return numericOperation(this, other, OperationType.multiply);
-    } else {
-      throw ArgumentError('Expected num or NumericTensor (of the same DType) as other, but received ${other.runtimeType}', 'other');
-    }
-  }
-
-  @override
-  Tensor operator /(Object other) {
-    if (other is num) {
-      return divideScalar(this, other);
-    } else if (other is NumericTensor) {
-      return numericOperation(this, other, OperationType.divide);
-    } else {
-      throw ArgumentError('Expected num or NumericTensor (of the same DType) as other, but received ${other.runtimeType}', 'other');
-    }
-  }
-
-  @override
-  Tensor operator -() {
-    return negative(this);
-  }
-
-  @override
-  toString() {
-    String tensorStr = _toStringAsValues();
-    return '<Tensor(shape: $shape, values:\n [' +
-        tensorStr +
-        '], dType: ${dType.name})>';
-  }
-
-  @override
-  String toStringShort() {
-    return _toStringAsValues();
-  }
-
-  String _toStringAsValues() {
-    if (rank == 1) {
-      return buffer.toString();
-    }
-    int lastDim = shape[rank - 1];
-    int numberOfSlices = shape.size ~/ lastDim;
-    List<String> dimsString = [];
-    if (lastDim == 1) {
-      dimsString = List.generate(
-          shape.size, (i) => buffer.sublist(i, (i + 1)).toString());
-    } else {
-      dimsString = List.generate(
-          numberOfSlices,
-          (i) =>
-              buffer.sublist(i * lastDim, (i + 1) * lastDim).toString() +
-              ((i + 1) % shape[rank - 2] == 0 ? '' : '\n '));
-    }
-    for (int i = rank - 2; i > 0; i -= 1) {
-      int dim = shape[i];
-      numberOfSlices = numberOfSlices ~/ dim;
-      dimsString = List.generate(
-          numberOfSlices,
-          (j) =>
-              dimsString
-                  .sublist(j * dim, (j + 1) * dim)
-                  .toString()
-                  .replaceAll(RegExp('[,]'), '') +
-              ((j + 1) % shape[i - 1] == 0 ? '' : '\n '));
-    }
-    return dimsString.reduce((s1, s2) => s1 + s2);
   }
 }

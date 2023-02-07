@@ -1,11 +1,12 @@
+import '../tensors/num_tensor.dart';
 import '../tensors/tensor.dart';
 import '../utils/dtype_utils.dart';
 
-/// Multiplies matrix [a] by matrix [b]
+/// Multiplies matrix [a] by matrix [b].
 /// 
 /// The input tensors must, following any transpositions given in [transposeA] or [transposeB],
 /// be of rank >= 2 where the inner 2 dimensions specify valid matrix multiplication dimensions,
-/// and any further outer dimensions specify matching batch size, otherwise will throw an ArgumentError.
+/// and any further outer dimensions specify matching batch size, or otherwise will throw an ArgumentError.
 /// 
 /// Returns a (batched) matrix with the same [DType] as [a] and [b].
 /// 
@@ -33,16 +34,15 @@ import '../utils/dtype_utils.dart';
 /// ```
 Tensor matmul(Tensor a, Tensor b, {bool transposeA = false, bool transposeB = false}) {
   if (a.rank != b.rank) {
-    throw ArgumentError('Tensors a and b must have equal ranks');
+    throw ArgumentError('Tensors a and b must be of the same rank, but received a.rank: ${a.rank} and b.rank: ${b.rank}');
   }
   
   for (int i = 0; i < a.rank-2; i += 1) {
     if (a.shape[i] != b.shape[i]) {
-      throw ArgumentError('Tensors a and b must same batch shape');
+      throw ArgumentError('Tensors a and b must have same batch shape, but received a.shape: ${a.shape} and b.shape: ${b.shape}');
     }
   }
-
-
+  
   if ((a is NumericTensor) && (b is NumericTensor)) {
     DType dType = dTypeDecision(a.dType, b.dType);
 
@@ -52,7 +52,7 @@ Tensor matmul(Tensor a, Tensor b, {bool transposeA = false, bool transposeB = fa
     final bL = transposeB ? b.shape[-2] : b.shape[-1];
 
     if (aN != bN) {
-      throw ArgumentError('Last dims of a and b should meet requirements of matrix multiplication, but received $aN != $bN');
+      throw ArgumentError('Last dims of a and b should meet requirements of matrix multiplication, but $aN != $bN');
     }
 
     final int combinedBatchSize = a.shape.size ~/ aM ~/ aN;
@@ -76,9 +76,9 @@ Tensor matmul(Tensor a, Tensor b, {bool transposeA = false, bool transposeB = fa
         }
       }
     }
-    return Tensor.fromBuffer(buffer, shape, dType: dType);
+    return Tensor.fromTypedDataList(buffer, shape, dType: dType);
   } else {
-    throw ArgumentError('Tensors a and b should be NumericTensors of the same DType, but received ${a.dType} and ${b.dType}');
+    throw ArgumentError('Tensors a and b must be NumericTensors of the same DType, but received ${a.dType} and ${b.dType}');
   }
 }
 
@@ -112,9 +112,9 @@ Tensor matrixTranspose(Tensor x) {
       }
     }
     List<int> shape = [...x.shape.list.sublist(0, x.rank-2), x.shape[-1], x.shape[-2]];
-    return Tensor.fromBuffer(buffer, shape, dType: x.dType);
+    return Tensor.fromTypedDataList(buffer, shape, dType: x.dType);
   } else {
-    throw ArgumentError('Expected NumericTensors with rank >= 2, but got x: ${x.runtimeType} with rank ${x.rank}', 'x');
+    throw ArgumentError('Expected NumericTensors with rank >= 2, but received ${x.runtimeType} of the rank: ${x.rank}', 'x');
   }
 }
 

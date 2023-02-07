@@ -1,14 +1,16 @@
 import 'dart:math';
 
+import '../tensors/num_tensor.dart';
 import '/src/ops/other_ops.dart' show reshape;
 import '../tensors/tensor.dart';
 import '../utils/dtype_utils.dart';
 import '/src/tensors/tensor_shape.dart';
 
-enum OperationType {add, subtract, multiply, divide}
+/// Type of the arithmetic arithmeticOperation.
+enum ArithmeticOperation {add, subtract, multiply, divide}
 
-/// Computes resulting shape of a Tensor from broadcastable [TensorShape]s [ts1] and [ts2]
-List<int> broadcastCompShapes(TensorShape ts1, TensorShape ts2) {
+/// Computes the resulting shape of a Tensor from broadcastable [TensorShape]s [ts1] and [ts2].
+List<int> broadcastShapes(TensorShape ts1, TensorShape ts2) {
   List<int> shapeBase = [];
   for (int i = 0; i < ts1.rank; i += 1) {
     shapeBase.add(max(ts1[i], ts2[i]));
@@ -16,86 +18,95 @@ List<int> broadcastCompShapes(TensorShape ts1, TensorShape ts2) {
   return shapeBase;
 }
 
-/// Computes element-wise negative of the elements of [x]
+/// Computes element-wise negative of the elements of [x].
 /// 
-/// Returns [Tensor] of the same [DType] as [x]
+/// Returns [Tensor] of the same [DType] as [x].
 Tensor negative(NumericTensor x) {
   List buffer = emptyBuffer(x.dType, x.shape.size);
   for (int i = 0; i < x.shape.size; i += 1) {
     buffer[i] = -x.buffer[i];
   }
-  return Tensor.fromBuffer(buffer, x.shape.list, dType: x.dType);
+  return Tensor.fromTypedDataList(buffer, x.shape.list, dType: x.dType);
 }
 
-Tensor opWithScalar(NumericTensor x, num other, OperationType operationType) {
+/// Performs element-wise [arithmeticOperation] on [x] and scalar [other].
+/// 
+/// Returns [Tensor] of derived [DType] from [x.dType] and [other.runtimeType].
+Tensor opWithScalar(NumericTensor x, num other, ArithmeticOperation arithmeticOperation) {
   DType dType = dTypeAndNumDecision(x.dType, other.runtimeType);
   List buffer = emptyBuffer(dType, x.shape.size);
   for (int i = 0; i < x.shape.size; i += 1) {
-    if (operationType == OperationType.add) {
+    if (arithmeticOperation == ArithmeticOperation.add) {
       buffer[i] = x.buffer[i]+other;
     }
-    else if (operationType == OperationType.subtract) {
+    else if (arithmeticOperation == ArithmeticOperation.subtract) {
       buffer[i] = x.buffer[i]-other;
     }
-    else if (operationType == OperationType.multiply) {
+    else if (arithmeticOperation == ArithmeticOperation.multiply) {
       buffer[i] = x.buffer[i]*other;
     }
     else {
       buffer[i] = x.buffer[i]/other;
     }
   }
-  return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+  return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
 }
 
 /// Adds [other] to elements of [x].
 /// 
 /// Returns [Tensor] of derived [DType] from [x.dType] and [other.runtimeType].
-Tensor addScalar(NumericTensor x, num other) => opWithScalar(x, other, OperationType.add);
+Tensor addScalar(NumericTensor x, num other) => opWithScalar(x, other, ArithmeticOperation.add);
 
-/// Subtracts [other] to elements of [x].
+/// Subtracts [other] from elements of [x].
 /// 
 /// Returns [Tensor] of derived [DType] from [x.dType] and [other.runtimeType].
-Tensor subtractScalar(NumericTensor x, num other) => opWithScalar(x, other, OperationType.subtract);
+Tensor subtractScalar(NumericTensor x, num other) => opWithScalar(x, other, ArithmeticOperation.subtract);
 
-/// Multiplies [other] to elements of [x].
+/// Multiplies elements of [x] by [other].
 /// 
 /// Returns [Tensor] of derived [DType] from [x.dType] and [other.runtimeType].
-Tensor multiplyScalar(NumericTensor x, num other) => opWithScalar(x, other, OperationType.multiply);
+Tensor multiplyScalar(NumericTensor x, num other) => opWithScalar(x, other, ArithmeticOperation.multiply);
 
-/// Divides [other] to elements of [x].
+/// Divides elements of [x] by [other].
 /// 
 /// Returns [Tensor] of derived [DType] from [x.dType] and [other.runtimeType].
-Tensor divideScalar(NumericTensor x, num other) => opWithScalar(x, other, OperationType.divide);
+Tensor divideScalar(NumericTensor x, num other) => opWithScalar(x, other, ArithmeticOperation.divide);
 
 
-/// Adds [x] and [other] element-wise.
+/// Performs element-wise [arithmeticOperation] on equal-shaped [x] and [other].
 /// 
-/// Returns [Tensor] of given [dType].
-Tensor opWithEqualShapes(NumericTensor x, NumericTensor other, OperationType operationType) {
+/// [x] and [other] must be of the same [Dtype].
+/// 
+/// Returns [Tensor] of the same shape and type as [x] and [other].
+Tensor opWithEqualShapes(NumericTensor x, NumericTensor other, ArithmeticOperation arithmeticOperation) {
   DType dType = dTypeDecision(x.dType, other.dType);
   List buffer = emptyBuffer(dType, x.shape.size);
   for (int i = 0; i < x.shape.size; i += 1) {
-    if (operationType == OperationType.add) {
+    if (arithmeticOperation == ArithmeticOperation.add) {
       buffer[i] = x.buffer[i]+other.buffer[i];
     }
-    else if (operationType == OperationType.subtract) {
+    else if (arithmeticOperation == ArithmeticOperation.subtract) {
       buffer[i] = x.buffer[i]-other.buffer[i];
     }
-    else if (operationType == OperationType.multiply) {
+    else if (arithmeticOperation == ArithmeticOperation.multiply) {
       buffer[i] = x.buffer[i]*other.buffer[i];
     }
     else {
       buffer[i] = x.buffer[i]/other.buffer[i];
     }
   }
-  return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+  return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
 }
 
 
-/// Computes "element-wise" [operation] of Tensors [x] and [other] with compatible shapes.
-Tensor opWithCompShape(NumericTensor x, NumericTensor other, OperationType operationType) {
+/// Performs element-wise [arithmeticOperation] on compatible-shaped [x] and [other].
+/// 
+/// [x] and [other] must be of the same [Dtype].
+/// 
+/// Returns [Tensor] of the same [DType] as [x] and [other],and with broadcasted shape.
+Tensor opWithCompShape(NumericTensor x, NumericTensor other, ArithmeticOperation arithmeticOperation) {
   DType dType = dTypeDecision(x.dType, other.dType);
-  final List<int> shape = broadcastCompShapes(x.shape, other.shape);
+  final List<int> shape = broadcastShapes(x.shape, other.shape);
   final int length = shape.reduce((a,b) => a*b);
 
   final List<int> cumProdT = List<int>.generate(shape.length, (i) => i == shape.length-1 ? 1 : (x.shape[i] == 1 ? 0 : x.shape.list.sublist(i+1).reduce((e1, e2) => e1*e2)));
@@ -119,27 +130,29 @@ Tensor opWithCompShape(NumericTensor x, NumericTensor other, OperationType opera
       tIndex += x.shape[k] == 1 ? 0 : cumProdT[k] * currentIndices[k];
       otherIndex += other.shape[k] == 1 ? 0 : cumProdOther[k] * currentIndices[k];
     }
-    if (operationType == OperationType.add) {
+    if (arithmeticOperation == ArithmeticOperation.add) {
       buffer[i] = x.buffer[tIndex]+other.buffer[otherIndex];
     }
-    else if (operationType == OperationType.subtract) {
+    else if (arithmeticOperation == ArithmeticOperation.subtract) {
       buffer[i] = x.buffer[tIndex]-other.buffer[otherIndex];
     }
-    else if (operationType == OperationType.multiply) {
+    else if (arithmeticOperation == ArithmeticOperation.multiply) {
       buffer[i] = x.buffer[tIndex]*other.buffer[otherIndex];
     }
     else {
       buffer[i] = x.buffer[tIndex]/other.buffer[otherIndex];
     }
   }
-  return Tensor.fromBuffer(buffer, shape, dType: dType);
+  return Tensor.fromTypedDataList(buffer, shape, dType: dType);
 }
 
 
-/// Computes "element-wise" [operation] of Tensors [x] and [other] with equal last k dims of shape.
+/// Performs element-wise [arithmeticOperation] on equalWithLastDims-shaped [x] and [other].
 /// 
-/// [x] must be a [Tensor] of higher rank, i.e., [x.rank] > [other.rank].
-Tensor opWithLastDims(NumericTensor x, NumericTensor other, OperationType operationType) {
+/// [x] and [other] must be of the same [Dtype].
+/// 
+/// Returns [Tensor] of the same [DType] as [x] and [other],and with broadcasted shape.
+Tensor opWithLastDims(NumericTensor x, NumericTensor other, ArithmeticOperation arithmeticOperation) {
   if (other.rank > x.rank) {
     throw ArgumentError('Incorrect arguments order: expect to have x with higher rank than other, but received x.rank: ${x.rank} and other.rank: ${other.rank}');
   }
@@ -150,13 +163,13 @@ Tensor opWithLastDims(NumericTensor x, NumericTensor other, OperationType operat
 
   for (int b = 0; b < residualSize; b += 1) {
     for (int i = 0; i < matchSize; i += 1) {
-      if (operationType == OperationType.add) {
+      if (arithmeticOperation == ArithmeticOperation.add) {
         buffer[b*matchSize + i] = x.buffer[b*matchSize+i]+other.buffer[i];
       }
-      else if (operationType == OperationType.subtract) {
+      else if (arithmeticOperation == ArithmeticOperation.subtract) {
         buffer[b*matchSize + i] = x.buffer[b*matchSize+i]-other.buffer[i];
       }
-      else if (operationType == OperationType.multiply) {
+      else if (arithmeticOperation == ArithmeticOperation.multiply) {
         buffer[b*matchSize + i] = x.buffer[b*matchSize+i]*other.buffer[i];
       }
       else {
@@ -164,35 +177,36 @@ Tensor opWithLastDims(NumericTensor x, NumericTensor other, OperationType operat
       }
     }
   }
-  return Tensor.fromBuffer(buffer, x.shape.list, dType: dType);
+  return Tensor.fromTypedDataList(buffer, x.shape.list, dType: dType);
 }
 
-/// Returns element-wise [operation] of [x] and [other].
+
+/// Performs element-wise [arithmeticOperation] on broadcastable-shaped [x] and [other].
 /// 
-/// [x] and [other] must be of the same [DType]. 
+/// [x] and [other] must be of the same [Dtype].
 /// 
-/// Tensors might be with different, but should be with broadcastable [TensorShape]s. 
-Tensor numericOperation(NumericTensor x, NumericTensor other, OperationType operationType) {
+/// Returns [Tensor] of the same [DType] as [x] and [other],and with broadcasted shape. 
+Tensor numericOperation(NumericTensor x, NumericTensor other, ArithmeticOperation arithmeticOperation) {
   if (x.dType != other.dType) {
     throw ArgumentError('Tensors must be of the same DType, but received ${x.dType} and ${other.dType}');
   }
-  if (x.shape.equalWith(other.shape)) {
-      return opWithEqualShapes(x, other, operationType);
+  if (x.shape.equalTo(other.shape)) {
+      return opWithEqualShapes(x, other, arithmeticOperation);
     } else if (x.shape.compatibleWith(other.shape)) {
-      return opWithCompShape(x, other, operationType);
+      return opWithCompShape(x, other, arithmeticOperation);
     } else if (x.shape.equalWithLastDims(other.shape)) {
-      return opWithLastDims(x.rank > other.rank ? x : other, x.rank > other.rank ? other : x, operationType);
+      return opWithLastDims(x.rank > other.rank ? x : other, x.rank > other.rank ? other : x, arithmeticOperation);
     } else if (other.shape.size == 1) {
       if (other.rank > x.rank) {
         x = reshape(x, [...List.filled(other.rank-x.rank, 1), ...x.shape.list]) as NumericTensor;
       }
-      return opWithScalar(x, other.buffer[0], operationType);
+      return opWithScalar(x, other.buffer[0], arithmeticOperation);
     } else if (x.shape.size == 1) {
       if (x.rank > other.rank) {
         x = reshape(other, [...List.filled(x.rank-other.rank, 1), ...other.shape.list]) as NumericTensor;
       }
-      return opWithScalar(other, x.buffer[0], operationType);
+      return opWithScalar(other, x.buffer[0], arithmeticOperation);
     } else {
-      throw ArgumentError('Tensor shape ${x.shape} is not compatible with ${other.shape}', 'other');
+      throw ArgumentError('Tensor of shape ${x.shape} is not broadcastable with ${other.shape} shape', 'other');
     }
 }

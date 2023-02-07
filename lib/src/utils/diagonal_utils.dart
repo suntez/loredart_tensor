@@ -2,7 +2,7 @@ import 'dart:math' as math;
 import '../tensors/tensor.dart';
 import '../utils/dtype_utils.dart';
 
-/// Fills buffer for batched [numRows] by [numCols] identity matrix.
+/// Fills and returns TypedData list for batched [numRows]x[numCols] identity matrix of the given [dType].
 List eyeBuffer(int numRows, int numCols, List<int> batchShape, DType dType) {
   if (numCols <= 0 || numRows <= 0) {
     throw ArgumentError('Number of columns and rows must be > 0, but received numRows: $numRows, numCols: $numCols');
@@ -18,7 +18,7 @@ List eyeBuffer(int numRows, int numCols, List<int> batchShape, DType dType) {
   return buffer;
 }
 
-/// Constructs diag [Tensor] from elements of [diagonal], with given [offset].
+/// Constructs diagonal [Tensor] of the [dType], from elements of [diagonal], with given [offset].
 /// 
 /// [numRows] and [numCols] might be used to change shape of matrix.
 Tensor createDiagTensor(List<dynamic> diagonal, DType dType, int offset, int? numRows, int? numCols) {
@@ -38,7 +38,7 @@ Tensor createDiagTensor(List<dynamic> diagonal, DType dType, int offset, int? nu
     for (int i = 0; i < diagonal.length; i += 1) {
       buffer[i * numCols + i + (offset >= 0 ? offset : (-offset)*numCols)] = dType.isInt ? (diagonal[i] as num).toInt() : (diagonal[i] as num).toDouble();
     }
-    return Tensor.fromBuffer(buffer, [numRows, numCols], dType: dType);
+    return Tensor.fromTypedDataList(buffer, [numRows, numCols], dType: dType);
   }
   else if (diagonal[0] is List<num>) {
 
@@ -65,7 +65,7 @@ Tensor createDiagTensor(List<dynamic> diagonal, DType dType, int offset, int? nu
         buffer[b*numRows*numCols + i * numCols + i + (offset >= 0 ? offset : (-offset)*numCols)] = dType.isInt ? (diagonal[b][i] as num).toInt() : (diagonal[b][i] as num).toDouble();
       }
     }
-    return Tensor.fromBuffer(buffer, [diagonal.length, numRows, numCols], dType: dType);
+    return Tensor.fromTypedDataList(buffer, [diagonal.length, numRows, numCols], dType: dType);
   } else {
     throw ArgumentError('Expected List<num> or List<List<num>> as diagonal, but received ${diagonal.runtimeType}', 'diagonal');
   }

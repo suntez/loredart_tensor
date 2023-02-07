@@ -1,9 +1,8 @@
 import 'package:loredart_tensor/src/utils/dtype_utils.dart';
 
+import '../tensors/num_tensor.dart';
 import '../tensors/tensor.dart';
 import 'reduce_slices.dart';
-
-//TODO: update API for the reduce ops
 
 /// Computes [reduceRule] function of elements across dimensions given in [axis] of a tensor [x].
 /// 
@@ -24,7 +23,7 @@ Tensor _reduceTensor(Tensor x, num Function(List, List<int>, List<int>, List<int
 
       for (int i = 0; i < axis.length; i += 1) {
         if (axis[i] >= x.rank || axis[i] <= -x.rank) {
-          throw ArgumentError('Axis should include elements from interval [-x.rank, +x.rank), but got axis[$i] = ${axis[i]}', 'axis');
+          throw RangeError.value(axis[i], 'axis', 'Axis should include elements from interval [-x.rank, +x.rank), but got axis[$i] = ${axis[i]}');
         }
         axis[i] %= x.rank;
       }
@@ -49,7 +48,7 @@ Tensor _reduceTensor(Tensor x, num Function(List, List<int>, List<int>, List<int
         if (!keepDims) {
           shape = [for (int i = 0; i < shape.length; i += 1) if (!(shape[i] == 1 && axis.contains(i))) shape[i]];
         }
-        return Tensor.fromBuffer(buffer, shape, dType: dType);
+        return Tensor.fromTypedDataList(buffer, shape, dType: dType);
       }
     }
   } else {
