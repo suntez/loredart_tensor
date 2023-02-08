@@ -20,7 +20,7 @@ List eyeBuffer(int numRows, int numCols, List<int> batchShape, DType dType) {
 
 /// Constructs diagonal [Tensor] of the [dType], from elements of [diagonal], with given [offset].
 /// 
-/// [numRows] and [numCols] might be used to change shape of matrix.
+/// [numRows] and [numCols] might be used to change the shape of the matrix.
 Tensor createDiagTensor(List<dynamic> diagonal, DType dType, int offset, int? numRows, int? numCols) {
   if (diagonal[0] is num) {
     if (diagonal.any((element) => element.runtimeType != diagonal[0].runtimeType)) {

@@ -11,6 +11,11 @@ import '/src/utils/shape_utils.dart';
 /// The data types of the elements in a [Tensor].
 /// 
 /// `bool` and `string` data types aren't supported yet.
+/// 
+/// Some operations can use [Tensor]s with Dart built-in Types, in such cases:
+/// - [double] can work with [float32] and [float64],
+/// - [int] can work with any numeric [DType], however the returning type will be derived from the [Tensor]
+/// (e.g. [int] + [int64] = [int64], [int] + [float32] = [float32])
 enum DType {
   float32,
   float64,
@@ -47,13 +52,13 @@ const Map<Type, DType> defaultTypesToDTypes = {
 /// - [shape]
 /// - single [dType]
 /// 
-/// [Tensor]s are considered immutable and any operation with them will produce the new instance of [Tensor] class.
+/// [Tensor]s are considered immutable, and any operation with them will produce a new instance of the [Tensor] class.
 /// 
 /// See concrete [Tensor] implementations for more details:
 /// - [NumericTensor] for numeric [DTypes]
 abstract class Tensor {
   
-  /// The shape of the [Tensor].
+  /// The shape of a [Tensor].
   late final TensorShape shape;
 
   /// The data type of [Tensor]'s elements.
@@ -61,19 +66,19 @@ abstract class Tensor {
 
   /// Number of dims in the [shape].
   /// 
-  /// [rank] is a number of indices needed to get single element of a [Tensor].
+  /// [rank] is a number of indices needed to get a single element of a [Tensor].
   int get rank => shape.rank;
 
   /// Creates [Tensor] from [values].
   /// 
-  /// [values] may be list of [num] or have a multidimensional (nested) structure. Non-numerical lists aren't supported yet.
+  /// [values] may be a list of [num] or have a multidimensional (nested) structure. Non-numerical lists aren't supported yet.
   /// 
-  /// If [shape] is specified, tries to reshape elements to match it, otherwise inherits shape from [values].
-  /// If number of elements of [values] won't be equal to [shape.size] throws an [ArgumentError].
+  /// If [shape] is specified, tries to reshape elements to match it; otherwise, inherits shape from [values].
+  /// If the number of elements of [values] won't equal [shape.size] throws an [ArgumentError].
   /// 
   /// If [dType] is specified, casts elements of [value] to meet the type, otherwise will inherit [dType] according to `defaultTypesToDTypes`.
   /// 
-  /// If [values] contains non-numerical elements, elements of different type, or nested lists have non-equal length - will throw an [ArgumentError].
+  /// If [values] contains non-numerical elements, elements of a different type, or nested lists have non-equal lengths - will throw an [ArgumentError].
   /// 
   /// Examples:
   /// ```dart

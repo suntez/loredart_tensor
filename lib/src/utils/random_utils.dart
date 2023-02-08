@@ -1,5 +1,10 @@
 import 'dart:math' show Random, log, sin, cos, sqrt, pi;
 
+/// Generates a random list of given [length], with normal distribution with [mean] and [std].
+/// 
+/// Uses Box–Muller transformation to switch from uniform distribution to a normal one.
+/// 
+/// The optional parameter [seed] is used to initialize a [Random] generator.
 List<double> generateNormallyDistList(int length, num mean, num std, {int? seed,}) {
   final Random randU1 = Random(seed);
   final Random randU2 = Random(seed);
@@ -17,7 +22,13 @@ List<double> generateNormallyDistList(int length, num mean, num std, {int? seed,
   return List.generate(length, (i) => normallyDist01[i] * std + mean);
 }
 
-
+/// Generates a random list of given [length], with random values from a truncated normal distribution.
+/// 
+/// The [mean] and [std] are normal distribution parameters before the redrawing.
+/// 
+/// Uses Box–Muller transformation to switch from uniform distribution to a normal one.
+/// 
+/// The optional parameter [seed] is used to initialize a [Random] generator.
 List<double> generateTruncatedNormallyDistList(int length, num mean, num std, {int? seed,}) {
   final Random randU1 = Random(seed);
   final Random randU2 = Random(seed);

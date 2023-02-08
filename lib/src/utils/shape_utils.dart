@@ -1,6 +1,6 @@
-/// Returns the shape of the nested lists of [values]
+/// Returns the shape of the nested lists of [values].
 /// 
-/// All nested list must be of the same length, otherwise will throw an ArgumentError.
+/// All nested lists must be of the same length, otherwise will throw an ArgumentError.
 List<int> extractDimsFromNestedValues(List<dynamic> values) {
   List<int> shape = [];
   while (true) {
@@ -23,7 +23,7 @@ List<int> extractDimsFromNestedValues(List<dynamic> values) {
 
 /// Recursively flatten nested [values].
 /// 
-/// The elements of the flatten list must be of the same type, otherwise will throw an ArgumentError.
+/// The elements of the flattened list must be of the same type, otherwise will throw an ArgumentError.
 List flattenList(List values) {
   if (values.every((element) => element is List)) {
     final flattenLists = [for (final value in values) ...flattenList(value)];

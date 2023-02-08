@@ -13,7 +13,7 @@ DType dTypeDecision(DType dType1, DType dType2) {
 
 /// Returns the resulting [DType] of the operation on the Tensor of [dType] and num of [type].
 /// 
-/// If there there is no compatible combination of [dType] and [type] throws an UnsupportedError.
+/// If the combination of [dType] and [type] is incompatible, throws an ArgumentError.
 DType dTypeAndNumDecision(DType dType, Type type, [bool tensorInitialization = false]) {
   if ((dType == DType.float32) && type == double) {
     return DType.float32;
@@ -32,12 +32,20 @@ DType dTypeAndNumDecision(DType dType, Type type, [bool tensorInitialization = f
   } else if ((dType == DType.int32 || dType == DType.int64) && type == double && tensorInitialization) {
     return dType;
   } else {
-    throw UnsupportedError('$dType and $type are not compatible data types.');
+    throw ArgumentError('$dType and $type are not compatible data types');
   }
 }
 
-/// Returns an empty TypedData list of the given [length] according to the [dType].
+/// Returns an empty buffer list of the given [length] according to the [dType].
+/// 
+/// If [dType] is a numeric one, it will return one of the TypedData Lists,
+/// but if [dType] is not supported yet - it will throw an ArgumentError.
+/// 
+/// [length] must be a positive integer, otherwise throws an ArgumentError.
 List emptyBuffer(DType dType, int length) {
+  if (length <= 0) {
+    throw ArgumentError('Length of a buffer list must be a positive integer, but received $length');
+  }
   if (dType == DType.float32) {
     return Float32List(length);
   } else if (dType == DType.float64) {
@@ -50,7 +58,7 @@ List emptyBuffer(DType dType, int length) {
     return Int64List(length);
   }
   else {
-    throw UnsupportedError('$dType is not supported for empty buffer');
+    throw ArgumentError('$dType is not supported for empty buffer', 'dType');
   }
 }
 

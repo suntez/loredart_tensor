@@ -2,10 +2,15 @@ import 'dart:math' show min;
 
 /// The shape of a [Tensor].
 /// 
-/// Represents number of dimensions and a size for each dimension of a [Tensor].
+/// Represents a number of dimensions and a size for each dimension of a [Tensor].
 class TensorShape {
+  /// The list of dims
   late final List<int> list;
+
+  /// A number of dims in the [shape].
   int get rank => list.length;
+
+  /// A total number of elements.
   int get size => list.reduce((d1, d2) => d1 * d2);
 
   /// Creates new TensorShape from non-empty [shape].

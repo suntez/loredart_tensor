@@ -2,12 +2,15 @@ import '../tensors/num_tensor.dart';
 import '/src/utils/dtype_utils.dart';
 import '/src/tensors/tensor.dart';
 
-/// Concatenates [Tensor]s of [tensors] along one given dimension [axis].
+/// Concatenates [Tensor]s from [tensors] along one given [axis].
 /// 
-/// Elements of [tensors] must be [NumericTensor]s with same [DType], same rank and have equal shapes, except in the [axis] index.
+/// Elements of [tensors] must be [NumericTensor]s with the same [DType], same rank, and have equal shapes, except in the [axis] index.
+/// If any of the conditions aren't met will throw an ArgumentError.
 /// 
 /// If [tensors[i].shape] == `[d0, d1, ..., Daxis(i), ..., dn]`, then concatenated tensor has shape `[d0, d1, ..., R, ..., dn]`,
 /// where `R = sum(Daxis(i))`.
+/// 
+/// The operation supports negative values of [axis], but will throw a RangeError if [axis] is not between [-rank, rank).
 /// 
 /// Returns [Tensor] with the same [DType] as elements of [tensors].
 /// 
@@ -83,10 +86,10 @@ Tensor concat(List<Tensor> tensors, {int axis = - 1}) {
 /// Extracts and returns strode slice of the tensor [x]
 /// from [begin] (inclusively) to [end] (exclusively).
 /// 
-/// [begin] and [end] must have length of [x.rank].
+/// [begin] and [end] must have a length of [x.rank] or will throw an ArgumentError.
 /// 
-/// Slicing doesn't support negative indices, so req `0 <= start[i] <= end[i]` must be meet,
-/// otherwise will throw an ArgumentError.
+/// Slicing doesn't support negative indices, so reqs `0 <= begin[i] <= end[i]` and `begin[i] <= end[i] <= shape[i]` must be met,
+/// otherwise will throw a RangeError.
 /// 
 /// Returns a [Tensor] of the same [DType] as [x].
 /// 
@@ -143,7 +146,7 @@ Tensor slice(Tensor x, List<int> begin, List<int> end) {
   }
 }
 
-/// Pads tensor [x] with [value] according to the [padding].
+/// Pads tensor [x] with [value] according to the [padding] scheme.
 /// 
 /// [padding] is a [Int32NumericTensor] (Tensor with DType.int32) of shape `[n,2]`, where n = [x.rank].
 /// 
@@ -334,15 +337,15 @@ Tensor squeeze(Tensor x, {List<int>? axis}) {
 /// Constructs and returns one-hot tensor.
 /// 
 /// The locations represented by [indices] take value [onValue], while all other locations take value [offValue].
-/// The [indices] must be an integer based [Tensor].
+/// The [indices] must be an integer-based [Tensor].
 /// 
 /// If the input [indices] is rank N, the output will have rank N+1, with extra dim created at dimension [axis] with size [depth].
 /// The [axis] must be between [-1, x.rank), otherwise will throw an ArgumentError.
 /// 
 /// If [dType] is not provided, it will attempt to assume the DType based on [onValue] and [offValue] (must be of the same type),
-/// otherwise [onValue] and [offValue] and [dType] must correspond to the same type.
+/// otherwise, [onValue] and [offValue] and [dType] must correspond to the same type.
 /// 
-/// [indices] may includes element outside the range [0, depth-1], in that case all values of the corresponding location will be set to [offValue].
+/// [indices] may include elements outside the range [0, depth-1], and in that case, all values of the corresponding location will be set to [offValue].
 /// 
 /// Example 1:
 /// ```dart

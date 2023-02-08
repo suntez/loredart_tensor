@@ -6,10 +6,10 @@ import '../tensors/tensor.dart';
 import '../utils/dtype_utils.dart';
 import '/src/tensors/tensor_shape.dart';
 
-/// Type of the arithmetic arithmeticOperation.
+/// Type of the arithmetic operation.
 enum ArithmeticOperation {add, subtract, multiply, divide}
 
-/// Computes the resulting shape of a Tensor from broadcastable [TensorShape]s [ts1] and [ts2].
+/// Computes the resulting shape of a Tensor from broadcastable shapes [ts1] and [ts2].
 List<int> broadcastShapes(TensorShape ts1, TensorShape ts2) {
   List<int> shapeBase = [];
   for (int i = 0; i < ts1.rank; i += 1) {
@@ -103,7 +103,7 @@ Tensor opWithEqualShapes(NumericTensor x, NumericTensor other, ArithmeticOperati
 /// 
 /// [x] and [other] must be of the same [Dtype].
 /// 
-/// Returns [Tensor] of the same [DType] as [x] and [other],and with broadcasted shape.
+/// Returns [Tensor] of the same [DType] as [x] and [other], and with broadcasted shape.
 Tensor opWithCompShape(NumericTensor x, NumericTensor other, ArithmeticOperation arithmeticOperation) {
   DType dType = dTypeDecision(x.dType, other.dType);
   final List<int> shape = broadcastShapes(x.shape, other.shape);
@@ -151,7 +151,7 @@ Tensor opWithCompShape(NumericTensor x, NumericTensor other, ArithmeticOperation
 /// 
 /// [x] and [other] must be of the same [Dtype].
 /// 
-/// Returns [Tensor] of the same [DType] as [x] and [other],and with broadcasted shape.
+/// Returns [Tensor] of the same [DType] as [x] and [other], and with broadcasted shape.
 Tensor opWithLastDims(NumericTensor x, NumericTensor other, ArithmeticOperation arithmeticOperation) {
   if (other.rank > x.rank) {
     throw ArgumentError('Incorrect arguments order: expect to have x with higher rank than other, but received x.rank: ${x.rank} and other.rank: ${other.rank}');
@@ -185,7 +185,7 @@ Tensor opWithLastDims(NumericTensor x, NumericTensor other, ArithmeticOperation 
 /// 
 /// [x] and [other] must be of the same [Dtype].
 /// 
-/// Returns [Tensor] of the same [DType] as [x] and [other],and with broadcasted shape. 
+/// Returns [Tensor] of the same [DType] as [x] and [other], and with broadcasted shape. 
 Tensor numericOperation(NumericTensor x, NumericTensor other, ArithmeticOperation arithmeticOperation) {
   if (x.dType != other.dType) {
     throw ArgumentError('Tensors must be of the same DType, but received ${x.dType} and ${other.dType}');

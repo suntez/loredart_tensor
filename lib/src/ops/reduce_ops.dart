@@ -162,7 +162,7 @@ Tensor reduceProd(Tensor x, {List<int>? axis, bool keepDims = false}) => _reduce
 /// Unless [keepDims] is `false`, the rank of the tensor is reduced by 1 for each of the entries in [axis],
 /// but if [keepDims] is `true`, the reduced dimensions are retained with length 1.
 /// 
-/// Returns reduces [Tensor] of the specified [dType], by default its inherited from [x].
+/// Returns reduces [Tensor] of the specified [dType], by default it's inherited from [x].
 /// (Unlike [corresponding function from TensorFlow](https://www.tensorflow.org/api_docs/python/tf/math/reduce_mean),
 /// `reduceMean` has an non-aggressive type inference from [x], and behaves more like `numpy` function).
 /// 
@@ -188,7 +188,7 @@ Tensor reduceMean(Tensor x, {List<int>? axis, bool keepDims = false, DType? dTyp
 /// Unless [keepDims] is `false`, the rank of the tensor is reduced by 1 for each of the entries in [axis],
 /// but if [keepDims] is `true`, the reduced dimensions are retained with length 1.
 /// 
-/// Returns reduces [Tensor] of the specified [dType], by default its inherited from [x].
+/// Returns reduces [Tensor] of the specified [dType], by default it's inherited from [x].
 /// (Unlike [corresponding function from TensorFlow](https://www.tensorflow.org/api_docs/python/tf/math/reduce_variance),
 /// `reduceVariance` has an non-aggressive type inference from [x], and behaves more like `numpy` function).
 /// 
@@ -214,9 +214,9 @@ Tensor reduceVariance(Tensor x, {List<int>? axis, bool keepDims = false, DType? 
 /// Unless [keepDims] is `false`, the rank of the tensor is reduced by 1 for each of the entries in [axis],
 /// but if [keepDims] is `true`, the reduced dimensions are retained with length 1.
 /// 
-/// Returns reduces [Tensor] of the specified [dType], by default its inherited from [x].
+/// Returns reduces [Tensor] of the specified [dType], by default it's inherited from [x].
 /// (Unlike [corresponding function from TensorFlow](https://www.tensorflow.org/api_docs/python/tf/math/reduce_std),
-/// `reduceStd` does not has an aggressive type inference from [x], and behaves more like `numpy` function).
+/// `reduceStd` has an non-aggressive type inference from [x], and behaves more like `numpy` function).
 /// 
 /// Examples:
 /// ```dart
@@ -243,7 +243,7 @@ Tensor reduceStd(Tensor x, {List<int>? axis, bool keepDims = false, DType? dType
 /// Unless [keepDims] is `false`, the rank of the tensor is reduced by 1 for each of the entries in [axis],
 /// but if [keepDims] is `true`, the reduced dimensions are retained with length 1.
 /// 
-/// Returns reduces [Tensor] of the specified integer based [dType], by default its [DType.int32].
+/// Returns reduces [Tensor] of the specified integer based [dType], by default it's [DType.int32].
 /// 
 /// Examples:
 /// ```dart
@@ -262,11 +262,12 @@ Tensor reduceStd(Tensor x, {List<int>? axis, bool keepDims = false, DType? dType
 Tensor reduceLocalArgMax(Tensor x, {List<int>? axis, bool keepDims = false}) => _reduceTensor(x, reduceLocalArgMaxSlice, axis: axis, keepDims: keepDims, dType: DType.int32);
 
 
-/// Returns the indices with the largest elements across dimension given in the [axis] of a tensor [x].
+/// Returns the indices with the largest elements across the dimension given in the [axis] of a tensor [x].
 /// 
-/// [axis] may be from half-interval [-x.rank, x.rank) and by default is equal to 0.
+/// [axis] may be from half-interval [-x.rank, x.rank) and by default, is equal to 0.
 /// 
-/// Returns reduces [Tensor] of the specified integer based [dType], by default its [DType.int32].
+/// Returns reduces [Tensor] of the specified integer-based [dType], by default it's [DType.int32].
+/// If [dType] is float-based will throw an ArgumentError.
 /// 
 /// Examples:
 /// ```dart
@@ -278,7 +279,7 @@ Tensor reduceLocalArgMax(Tensor x, {List<int>? axis, bool keepDims = false}) => 
 /// ```
 Tensor argMax(Tensor x, {int axis = 0, DType dType = DType.int32}) {
   if (!dType.isInt) {
-    throw ArgumentError("Only excepts the integer DTypes, but received $dType", 'dType');
+    throw ArgumentError("ArgMax only excepts the integer DTypes, but received $dType", 'dType');
   }
   return _reduceTensor(x, reduceLocalArgMaxSlice, axis: [axis], keepDims: false, dType: dType);
 }

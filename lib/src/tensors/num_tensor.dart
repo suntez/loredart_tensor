@@ -11,6 +11,10 @@ import '../utils/diagonal_utils.dart';
 /// 
 /// [NumericTensor] is a concrete implementation of [Tensor] that stores num values in a TypedData List [buffer].
 abstract class NumericTensor<L extends List> implements Tensor {
+
+  /// A storage list of tensors values.
+  /// 
+  /// Usually is one of the [TypedData] lists.
   late final L buffer;
 
   @override
@@ -108,6 +112,7 @@ abstract class NumericTensor<L extends List> implements Tensor {
     return _toStringAsValues();
   }
 
+  /// String representation of the values from [buffer], which consider the [shape].
   String _toStringAsValues() {
     if (rank == 1) {
       return buffer.toString();
@@ -271,7 +276,7 @@ class Int64NumericTensor extends NumericTensor<Int64List> {
 }
 
 
-/// [NumericTensor] with uint8 values stored in [Uin8List].
+/// [NumericTensor] with uint8 values stored in [Uint8List].
 class Uint8NumericTensor extends NumericTensor<Uint8List> {
   @override
   final dType = DType.uint8;

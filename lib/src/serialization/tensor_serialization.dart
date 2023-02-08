@@ -28,7 +28,7 @@ Map<String, dynamic> tensorToJson(Tensor tensor) {
   }
 }
 
-/// Constructs a [Tensor] from a [data] structure.
+/// Constructs a [Tensor] from a Map [data] structure.
 /// 
 /// Designed to deserialize [Tensor] from json file.
 /// 
