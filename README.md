@@ -16,16 +16,16 @@ There are many ways to create a Tensor instance, the basic ones - named factorie
 ```dart
 final x = Tensor.constant([2,0,2,3], shape: [2,2]);
 print(x);
-// <Tensor(shape: [2, 2], values:
+// Tensor(shape: [2, 2], values:
 // [[2, 0]
-// [2, 3]], dType: int32)>
+// [2, 3]], dType: int32)
 
 final y = Tensor.fill([3,3], 0.3, dType: DType.float64);
 print(y);
-// <Tensor(shape: [3, 3], values:
+// Tensor(shape: [3, 3], values:
 //  [[0.3, 0.3, 0.3]
 //  [0.3, 0.3, 0.3]
-//  [0.3, 0.3, 0.3]], dType: float64)>
+//  [0.3, 0.3, 0.3]], dType: float64)
 ```
 
 There is no explicit limitation on the Tensors rank (length of the shape):

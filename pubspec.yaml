@@ -1,6 +1,6 @@
 name: loredart_tensor
 description: A Dart-pure package for manipulation with tensors (multidimensional arrays of data) inspired by the TensorFlow API.
-version: 1.0.0
+version: 1.0.1
 
 homepage: https://github.com/suntez/loredart_tensor
 repository: https://github.com/suntez/loredart_tensor
