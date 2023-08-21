@@ -76,9 +76,9 @@ Tensor _reduceTensor(Tensor x, num Function(List, List<int>, List<int>, List<int
 /// Tensor x = Tensor.constant([1,2,3,4,5,6], shape: [2,3]); // [[1,2,3]
 ///                                                          //  [4,5,6]]
 /// 
-/// reduceMax(x); // <Tensor(shape: [1], values: [[6]], dType: int32)>
-/// reduceMax(x, axis: [-1]); // <Tensor(shape: [2], values: [[3, 6]], dType: int32)>
-/// reduceMax(x, axis: [0], keepDims: true); // <Tensor(shape: [1, 3], values: [[4, 5, 6]], dType: int32)>
+/// reduceMax(x); // Tensor(shape: [1], values: [[6]], dType: int32)
+/// reduceMax(x, axis: [-1]); // Tensor(shape: [2], values: [[3, 6]], dType: int32)
+/// reduceMax(x, axis: [0], keepDims: true); // Tensor(shape: [1, 3], values: [[4, 5, 6]], dType: int32)
 /// ```
 Tensor reduceMax(Tensor x, {List<int>? axis, bool keepDims = false}) => _reduceTensor(x, reduceMaxSlice, axis: axis, keepDims: keepDims, dType: x.dType);
 
@@ -101,9 +101,9 @@ Tensor reduceMax(Tensor x, {List<int>? axis, bool keepDims = false}) => _reduceT
 /// ```dart
 /// Tensor x = Tensor.constant([1,2,3,4,5,6], shape: [2,3]); // [[1,2,3]
 ///                                                          //  [4,5,6]]
-/// reduceMin(x); // <Tensor(shape: [1], values: [[1]], dType: int32)>
-/// reduceMin(x, axis: [-1]); // <Tensor(shape: [2], values: [[1, 4]], dType: int32)>
-/// reduceMin(x, axis: [0], keepDims: true); // <Tensor(shape: [1, 3], values: [[1, 2, 3]], dType: int32)>
+/// reduceMin(x); // Tensor(shape: [1], values: [[1]], dType: int32)
+/// reduceMin(x, axis: [-1]); // Tensor(shape: [2], values: [[1, 4]], dType: int32)
+/// reduceMin(x, axis: [0], keepDims: true); // Tensor(shape: [1, 3], values: [[1, 2, 3]], dType: int32)
 /// ```
 Tensor reduceMin(Tensor x, {List<int>? axis, bool keepDims = false}) => _reduceTensor(x, reduceMinSlice, axis: axis, keepDims: keepDims, dType: x.dType);
 
@@ -124,9 +124,9 @@ Tensor reduceMin(Tensor x, {List<int>? axis, bool keepDims = false}) => _reduceT
 /// ```dart
 /// Tensor x = Tensor.constant([1,2,3,4,5,6], shape: [2,3]); // [[1,2,3]
 ///                                                          //  [4,5,6]]
-/// reduceSum(x); // <Tensor(shape: [1], values: [[21]], dType: int32)>
-/// reduceSum(x, axis: [-1]); // <Tensor(shape: [2], values: [[6, 15]], dType: int32)>
-/// reduceSum(x, axis: [0], keepDims: true); // <Tensor(shape: [1, 3], values: [[5, 7, 9]], dType: int32)>
+/// reduceSum(x); // Tensor(shape: [1], values: [[21]], dType: int32)
+/// reduceSum(x, axis: [-1]); // Tensor(shape: [2], values: [[6, 15]], dType: int32)
+/// reduceSum(x, axis: [0], keepDims: true); // Tensor(shape: [1, 3], values: [[5, 7, 9]], dType: int32)
 /// ```
 Tensor reduceSum(Tensor x, {List<int>? axis, bool keepDims = false}) => _reduceTensor(x, reduceSumSlice, axis: axis, keepDims: keepDims, dType: x.dType);
 
@@ -147,9 +147,9 @@ Tensor reduceSum(Tensor x, {List<int>? axis, bool keepDims = false}) => _reduceT
 /// ```dart
 /// Tensor x = Tensor.constant([1,2,3,4,5,6], shape: [2,3]); // [[1,2,3]
 ///                                                          //  [4,5,6]]
-/// reduceProd(x); // <Tensor(shape: [1], values: [[720]], dType: int32)>
-/// reduceProd(x, axis: [-1]); // <Tensor(shape: [2], values: [[6, 120]], dType: int32)>
-/// reduceProd(x, axis: [0], keepDims: true); // <Tensor(shape: [1, 3], values: [[4, 10, 18]], dType: int32)>
+/// reduceProd(x); // Tensor(shape: [1], values: [[720]], dType: int32)
+/// reduceProd(x, axis: [-1]); // Tensor(shape: [2], values: [[6, 120]], dType: int32)
+/// reduceProd(x, axis: [0], keepDims: true); // Tensor(shape: [1, 3], values: [[4, 10, 18]], dType: int32)
 /// ```
 Tensor reduceProd(Tensor x, {List<int>? axis, bool keepDims = false}) => _reduceTensor(x, reduceProdSlice, axis: axis, keepDims: keepDims, dType: x.dType);
 
@@ -173,9 +173,9 @@ Tensor reduceProd(Tensor x, {List<int>? axis, bool keepDims = false}) => _reduce
 /// Tensor x = Tensor.constant([1,2,3,4,5,6], shape: [2,3], dType: float32); // [[1.0, 2.0, 3.0]
 ///                                                                          //  [4.0, 5.0, 6.0]]
 /// 
-/// reduceMean(x); // <Tensor(shape: [1], values: [[3.5]], dType: float32)>
-/// reduceMean(x, axis: [-1], dType: int32); // <Tensor(shape: [2], values: [[2, 5]], dType: int32)>
-/// reduceMean(x, axis: [0], keepDims: true); // <Tensor(shape: [1, 3], values: [[2.5, 3.5, 4.5]], dType: float32)>
+/// reduceMean(x); // Tensor(shape: [1], values: [[3.5]], dType: float32)
+/// reduceMean(x, axis: [-1], dType: int32); // Tensor(shape: [2], values: [[2, 5]], dType: int32)
+/// reduceMean(x, axis: [0], keepDims: true); // Tensor(shape: [1, 3], values: [[2.5, 3.5, 4.5]], dType: float32)
 /// ```
 Tensor reduceMean(Tensor x, {List<int>? axis, bool keepDims = false, DType? dType}) => _reduceTensor(x, reduceMeanSlice, axis: axis, keepDims: keepDims, dType: dType ?? x.dType);
 
@@ -199,9 +199,9 @@ Tensor reduceMean(Tensor x, {List<int>? axis, bool keepDims = false, DType? dTyp
 /// Tensor x = Tensor.constant([1,2,3,4,5,6], shape: [2,3], dType: DType.float32); // [[1.0, 2.0, 3.0]
 ///                                                                                //  [4.0, 5.0, 6.0]]
 /// 
-/// reduceVariance(x); // <Tensor(shape: [1], values: [[2.9166...]], dType: float32)>
-/// reduceVariance(x, axis: [-1]); // <Tensor(shape: [2], values: [[0.66..., 0.66...]], dType: float32)>
-/// reduceVariance(x, axis: [0], keepDims: true); // <Tensor(shape: [1, 3], values: [[2.25, 2.25, 2.25]], dType: float32)>
+/// reduceVariance(x); // Tensor(shape: [1], values: [[2.9166...]], dType: float32)
+/// reduceVariance(x, axis: [-1]); // Tensor(shape: [2], values: [[0.66..., 0.66...]], dType: float32)
+/// reduceVariance(x, axis: [0], keepDims: true); // Tensor(shape: [1, 3], values: [[2.25, 2.25, 2.25]], dType: float32)
 /// ```
 Tensor reduceVariance(Tensor x, {List<int>? axis, bool keepDims = false, DType? dType}) => _reduceTensor(x, reduceVarianceSlice, axis: axis, keepDims: keepDims, dType: dType ?? x.dType);
 
@@ -223,9 +223,9 @@ Tensor reduceVariance(Tensor x, {List<int>? axis, bool keepDims = false, DType? 
 /// Tensor x = Tensor.constant([1,2,3,4,5,6], shape: [2,3], dType: DType.float32); // [[1.0, 2.0, 3.0]
 ///                                                                          //  [4.0, 5.0, 6.0]]
 /// 
-/// reduceStd(x); // <Tensor(shape: [1], values: [[1.707...]], dType: float32)>
-/// reduceStd(x, axis: [-1]); // <Tensor(shape: [2], values: [[0.816..., 0.816...]], dType: float32)>
-/// reduceStd(x, axis: [0], keepDims: true); // <Tensor(shape: [1, 3], values: [[1.5, 1.5, 1.5]], dType: float32)>
+/// reduceStd(x); // Tensor(shape: [1], values: [[1.707...]], dType: float32)
+/// reduceStd(x, axis: [-1]); // Tensor(shape: [2], values: [[0.816..., 0.816...]], dType: float32)
+/// reduceStd(x, axis: [0], keepDims: true); // Tensor(shape: [1, 3], values: [[1.5, 1.5, 1.5]], dType: float32)
 /// ```
 Tensor reduceStd(Tensor x, {List<int>? axis, bool keepDims = false, DType? dType}) => _reduceTensor(x, reduceStdSlice, axis: axis, keepDims: keepDims, dType: dType ?? x.dType);
 
@@ -251,13 +251,13 @@ Tensor reduceStd(Tensor x, {List<int>? axis, bool keepDims = false, DType? dType
 ///                            20,1,7,8,
 ///                            12,5,13,9], shape: [2,3,2]);
 /// 
-/// reduceLocalArgMax(x, axis: [-1]); // <Tensor(shape: [2, 3], values: [[0, 1, 0], [1, 0, 0]], dType: int32)>
+/// reduceLocalArgMax(x, axis: [-1]); // Tensor(shape: [2, 3], values: [[0, 1, 0], [1, 0, 0]], dType: int32)
 /// 
-/// reduceLocalArgMax(x, axis: [0, 1]); // <Tensor(shape: [2], values: [[2, 5]], dType: int32)>
+/// reduceLocalArgMax(x, axis: [0, 1]); // Tensor(shape: [2], values: [[2, 5]], dType: int32)
 /// 
-/// reduceLocalArgMax(x, axis: [0, -1]); // <Tensor(shape: [3], values: [[0, 2, 0]], dType: int32)>
+/// reduceLocalArgMax(x, axis: [0, -1]); // Tensor(shape: [3], values: [[0, 2, 0]], dType: int32)
 /// 
-/// reduceLocalArgMax(x, axis: [1, -1]); // <Tensor(shape: [2], values: [[4, 4]], dType: int32)>
+/// reduceLocalArgMax(x, axis: [1, -1]); // Tensor(shape: [2], values: [[4, 4]], dType: int32)
 /// ```
 Tensor reduceLocalArgMax(Tensor x, {List<int>? axis, bool keepDims = false}) => _reduceTensor(x, reduceLocalArgMaxSlice, axis: axis, keepDims: keepDims, dType: DType.int32);
 
@@ -274,8 +274,8 @@ Tensor reduceLocalArgMax(Tensor x, {List<int>? axis, bool keepDims = false}) => 
 /// final x = Tensor.constant([10,2,3,4,20,1], shape: [2,3]); // [[10, 2, 3]
 ///                                                           //  [4, 20, 1]
 /// 
-/// argMax(x); // <Tensor(shape: [3], values: [[0, 1, 0]], dType: int32)>
-/// argMax(x, axis: -1); // <Tensor(shape: [2], values: [[0, 1]], dType: int32)>
+/// argMax(x); // Tensor(shape: [3], values: [[0, 1, 0]], dType: int32)
+/// argMax(x, axis: -1); // Tensor(shape: [2], values: [[0, 1]], dType: int32)
 /// ```
 Tensor argMax(Tensor x, {int axis = 0, DType dType = DType.int32}) {
   if (!dType.isInt) {

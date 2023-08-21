@@ -156,9 +156,9 @@ NumericTensor convertToNumericTensor(dynamic y) {
 /// ```dart
 /// final x = Tensor.constant([1.0, 2.0, 3.0, 4.0], shape: [2,2]);
 /// final y = Tensor.constant([1.0, 4.0]);
-/// print(equal(x, y)); // <Tensor(shape: [2, 2], values: [[1.0, 0.0] [0.0, 1.0]], dType: float32)>
+/// print(equal(x, y)); // Tensor(shape: [2, 2], values: [[1.0, 0.0] [0.0, 1.0]], dType: float32)
 /// 
-/// print(equal(x, 2.0)); // <Tensor(shape: [2, 2], values: [[0.0, 1.0] [0.0, 0.0]], dType: float32)>
+/// print(equal(x, 2.0)); // Tensor(shape: [2, 2], values: [[0.0, 1.0] [0.0, 0.0]], dType: float32)
 /// 
 /// // but this won't work
 /// print(equal(x, 1)) // Invalid argument(s): Tensors to compare.... 
@@ -183,9 +183,9 @@ Tensor equal(Tensor x, dynamic y) {
 /// ```dart
 /// final x = Tensor.constant([1.0, 2.0, 3.0, 4.0], shape: [2,2]);
 /// final y = Tensor.constant([1.0, 4.0]);
-/// print(greater(x, y)); // <Tensor(shape: [2, 2], values: [[0.0, 0.0] [1.0, 0.0]], dType: float32)>
+/// print(greater(x, y)); // Tensor(shape: [2, 2], values: [[0.0, 0.0] [1.0, 0.0]], dType: float32)
 /// 
-/// print(greater(x, 2.0)); // <Tensor(shape: [2, 2], values: [[0.0, 0.0] [1.0, 1.0]], dType: float32)>
+/// print(greater(x, 2.0)); // Tensor(shape: [2, 2], values: [[0.0, 0.0] [1.0, 1.0]], dType: float32)
 /// 
 /// // but this won't work
 /// print(greater(x, 1)) // Invalid argument(s): Tensors to compare.... 
@@ -210,9 +210,9 @@ Tensor greater(Tensor x, dynamic y) {
 /// ```dart
 /// final x = Tensor.constant([1.0, 2.0, 3.0, 4.0], shape: [2,2]);
 /// final y = Tensor.constant([1.0, 4.0]);
-/// print(greaterEqual(x, y)); // <Tensor(shape: [2, 2], values: [[1.0, 0.0] [1.0, 1.0]], dType: float32)>
+/// print(greaterEqual(x, y)); // Tensor(shape: [2, 2], values: [[1.0, 0.0] [1.0, 1.0]], dType: float32)
 /// 
-/// print(greaterEqual(x, 2.0)); // <Tensor(shape: [2, 2], values: [[0.0, 1.0] [1.0, 1.0]], dType: float32)>
+/// print(greaterEqual(x, 2.0)); // Tensor(shape: [2, 2], values: [[0.0, 1.0] [1.0, 1.0]], dType: float32)
 /// 
 /// // but this won't work
 /// print(greaterEqual(x, 1)) // Invalid argument(s): Tensors to compare.... 
@@ -237,9 +237,9 @@ Tensor greaterEqual(Tensor x, dynamic y) {
 /// ```dart
 /// final x = Tensor.constant([1.0, 2.0, 3.0, 4.0], shape: [2,2]);
 /// final y = Tensor.constant([1.0, 4.0]);
-/// print(less(x, y)); // <Tensor(shape: [2, 2], values: [[0.0, 1.0] [0.0, 0.0]], dType: float32)>
+/// print(less(x, y)); // Tensor(shape: [2, 2], values: [[0.0, 1.0] [0.0, 0.0]], dType: float32)
 /// 
-/// print(less(x, 2.0)); // <Tensor(shape: [2, 2], values: [[1.0, 0.0] [0.0, 0.0]], dType: float32)>
+/// print(less(x, 2.0)); // Tensor(shape: [2, 2], values: [[1.0, 0.0] [0.0, 0.0]], dType: float32)
 /// 
 /// // but this won't work
 /// print(less(x, 1)) // Invalid argument(s): Tensors to compare.... 
@@ -264,9 +264,9 @@ Tensor less(Tensor x, dynamic y) {
 /// ```dart
 /// final x = Tensor.constant([1.0, 2.0, 3.0, 4.0], shape: [2,2]);
 /// final y = Tensor.constant([1.0, 4.0]);
-/// print(lessEqual(x, y)); // <Tensor(shape: [2, 2], values: [[1.0, 1.0] [1.0, 0.0]], dType: float32)>
+/// print(lessEqual(x, y)); // Tensor(shape: [2, 2], values: [[1.0, 1.0] [1.0, 0.0]], dType: float32)
 /// 
-/// print(lessEqual(x, 2.0)); // <Tensor(shape: [2, 2], values: [[1.0, 1.0] [0.0, 0.0]], dType: float32)>
+/// print(lessEqual(x, 2.0)); // Tensor(shape: [2, 2], values: [[1.0, 1.0] [0.0, 0.0]], dType: float32)
 /// 
 /// // but this won't work
 /// print(lessEqual(x, 1)) // Invalid argument(s): Tensors to compare.... 
@@ -291,9 +291,9 @@ Tensor lessEqual(Tensor x, dynamic y) {
 /// ```dart
 /// final x = Tensor.constant([1.0, 2.0, 3.0, 4.0], shape: [2,2]);
 /// final y = Tensor.constant([1.0, 4.0]);
-/// print(notEqual(x, y)); // <Tensor(shape: [2, 2], values: [[0.0, 1.0] [1.0, 0.0]], dType: float32)>
+/// print(notEqual(x, y)); // Tensor(shape: [2, 2], values: [[0.0, 1.0] [1.0, 0.0]], dType: float32)
 /// 
-/// print(notEqual(x, 2.0)); // <Tensor(shape: [2, 2], values: [[1.0, 0.0] [1.0, 1.0]], dType: float32)>
+/// print(notEqual(x, 2.0)); // Tensor(shape: [2, 2], values: [[1.0, 0.0] [1.0, 1.0]], dType: float32)
 /// 
 /// // but this won't work
 /// print(notEqual(x, 1)) // Invalid argument(s): Tensors to compare.... 

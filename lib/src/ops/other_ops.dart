@@ -25,9 +25,9 @@ import '/src/tensors/tensor.dart';
 /// 
 /// Tensor c = concat([x1, x2], axis: -1);
 /// print(c);
-/// // <Tensor(shape: [1, 2, 3], values:
+/// // Tensor(shape: [1, 2, 3], values:
 /// //  [[[1.0, 2.0, 2.0]
-/// //   [1.0, 2.0, 2.0]]], dType: float32)>
+/// //   [1.0, 2.0, 2.0]]], dType: float32)
 /// ```
 Tensor concat(List<Tensor> tensors, {int axis = - 1}) {
   if (tensors.isEmpty) {
@@ -100,13 +100,13 @@ Tensor concat(List<Tensor> tensors, {int axis = - 1}) {
 ///  ]); // shape [2,2,3]
 /// 
 /// slice(x, [0,0,0], [1,2,3]);
-/// // <Tensor(shape: [1, 2, 3], values:
+/// // Tensor(shape: [1, 2, 3], values:
 /// //  [[[1 1 1]
-/// //   [2 2 2]]], dType: int32)>
+/// //   [2 2 2]]], dType: int32)
 /// 
 /// slice(x, [1,0,0], [1,3,1]);
-/// // <Tensor(shape: [3, 1], values:
-/// //  [[4][5][6]], dType: int32)>
+/// // Tensor(shape: [3, 1], values:
+/// //  [[4][5][6]], dType: int32)
 /// ```
 Tensor slice(Tensor x, List<int> begin, List<int> end) {
   if (begin.length != x.rank || end.length != x.rank) {
@@ -162,12 +162,12 @@ Tensor slice(Tensor x, List<int> begin, List<int> end) {
 /// Tensor padding = Tensor.constant([[1,2], [2,1]]);
 /// 
 /// pad(x, padding);
-/// // <Tensor(shape: [5, 6], values:
+/// // Tensor(shape: [5, 6], values:
 /// // [[0, 0, 0, 0, 0, 0]
 /// //  [0, 0, 2, 2, 2, 0]
 /// //  [0, 0, 2, 2, 2, 0]
 /// //  [0, 0, 0, 0, 0, 0]
-/// //  [0, 0, 0, 0, 0, 0]], dType: int64)>
+/// //  [0, 0, 0, 0, 0, 0]], dType: int64)
 /// ```
 Tensor pad(Tensor x, Tensor padding, {num value = 0.0}) {
   if (x is NumericTensor && padding is Int32NumericTensor) {
@@ -233,9 +233,9 @@ Tensor pad(Tensor x, Tensor padding, {num value = 0.0}) {
 /// //  [10, 12]]
 /// 
 /// reshape(x, [2,1,3]);
-/// // <Tensor(shape: [2, 1, 3], values:
-/// // [[[2 4 6]]
-/// // [[8 10 12]]], dType: int32)>
+/// // Tensor(shape: [2, 1, 3], values:
+/// //  [[[2 4 6]]
+/// //  [[8 10 12]]], dType: int32)
 /// ```
 Tensor reshape(Tensor x, List<int> shape) {
   if (x.shape.size == shape.reduce((e1, e2) => e1*e2)) {
@@ -256,12 +256,12 @@ Tensor reshape(Tensor x, List<int> shape) {
 /// Example:
 /// ```dart
 /// Tensor x = Tensor.constant([1,2,3]);
-/// // <Tensor(shape: [3], values:
-///  [[1, 2, 3]], dType: int32)>
+/// // Tensor(shape: [3], values:
+///  [[1, 2, 3]], dType: int32)
 /// 
 /// cast(x, DType.float64);
-/// // <Tensor(shape: [3], values:
-/// // [[1.0, 2.0, 3.0]], dType: float64)>
+/// // Tensor(shape: [3], values:
+/// // [[1.0, 2.0, 3.0]], dType: float64)
 /// ```
 Tensor cast(Tensor x, DType dType) {
   if (x is NumericTensor) {
@@ -352,11 +352,11 @@ Tensor squeeze(Tensor x, {List<int>? axis}) {
 /// final indices = Tensor.constant([0, 1, 2, 1]);
 /// final onehot = oneHotTensor(indices, depth: 3);
 /// print(onehot);
-/// // <Tensor(shape: [4, 3], values:
-/// // [[1.0, 0.0, 0.0]
-/// //  [0.0, 1.0, 0.0]
-/// //  [0.0, 0.0, 1.0]
-/// //  [0.0, 1.0, 0.0]], dType: float32)>
+/// // Tensor(shape: [4, 3], values:
+/// //  [[1.0, 0.0, 0.0]
+/// //   [0.0, 1.0, 0.0]
+/// //   [0.0, 0.0, 1.0]
+/// //   [0.0, 1.0, 0.0]], dType: float32)
 /// ```
 /// Example 2:
 /// ```dart
@@ -367,10 +367,10 @@ Tensor squeeze(Tensor x, {List<int>? axis}) {
 ///     dType: DType.int32
 ///  );
 ///  print(onehot);
-/// // <Tensor(shape: [3, 4], values:
-/// // [[5, -1, -1, -1]
-/// //  [-1, -1, 5, -1]
-/// //  [-1, -1, -1, -1]], dType: int32)>
+/// // Tensor(shape: [3, 4], values:
+/// //  [[5, -1, -1, -1]
+/// //   [-1, -1, 5, -1]
+/// //   [-1, -1, -1, -1]], dType: int32)
 /// ```
 Tensor oneHotTensor(Tensor indices, {required int depth, num onValue = 1.0, num offValue = 0.0, int axis = -1, DType? dType}) {
   if (!indices.dType.isInt) {

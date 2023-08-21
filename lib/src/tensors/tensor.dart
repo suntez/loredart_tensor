@@ -84,31 +84,31 @@ abstract class Tensor {
   /// ```dart
   /// Tensor x = Tensor.constant([1,2,3,4]); // vector
   /// print(x);
-  /// // <Tensor(shape: [4], values:
-  /// // [[1, 2, 3, 4]], dType: int32)>
+  /// // Tensor(shape: [4], values:
+  /// // [[1, 2, 3, 4]], dType: int32)
   /// 
   /// Tensor y = Tensor.constant([1,2,3,4], dType: DType.float32); // vector of concrete dType
   /// print(y);
-  /// // <Tensor(shape: [4], values:
-  /// // [[1.0, 2.0, 3.0, 4.0]], dType: float32)>
+  /// // Tensor(shape: [4], values:
+  /// // [[1.0, 2.0, 3.0, 4.0]], dType: float32)
   ///
   /// Tensor u = Tensor.constant([[1,2], [3,4]]); // nested list as matrix
   /// print(u);
-  /// // <Tensor(shape: [2, 2], values:
+  /// // Tensor(shape: [2, 2], values:
   /// // [[1, 2]
-  /// //  [3, 4]], dType: int32)>
+  /// //  [3, 4]], dType: int32)
   ///
   /// Tensor t = Tensor.constant([1,2,3,4,5,6], shape: [3,2]); // from vector to any shape
   /// print(t);
-  /// // <Tensor(shape: [3, 2], values:
+  /// // Tensor(shape: [3, 2], values:
   /// // [[1, 2]
   /// // [3, 4]
-  /// // [5, 6]], dType: int32)>
+  /// // [5, 6]], dType: int32)
   ///
   /// Tensor s = Tensor.constant([[1,2,3], [4,5,6]], shape: [6]); // reshaping nested lists
   ///  print(s);
-  /// // <Tensor(shape: [6], values:
-  /// // [[1, 2, 3, 4, 5, 6]], dType: int32)>
+  /// // Tensor(shape: [6], values:
+  /// // [[1, 2, 3, 4, 5, 6]], dType: int32)
   /// 
   /// ```
   factory Tensor.constant(List<dynamic> values, {List<int>? shape, DType? dType}) {
@@ -148,9 +148,9 @@ abstract class Tensor {
   ///  ```dart
   /// Tensor x = Tensor.zeros([2,2], dType: int32);
   /// print(x);
-  /// // <Tensor(shape: [2, 2], values:
+  /// // Tensor(shape: [2, 2], values:
   /// // [[0, 0]
-  /// // [0, 0]], dType: int32)>
+  /// // [0, 0]], dType: int32)
   /// ```
   factory Tensor.zeros(List<int> shape, {DType dType = DType.float32}) {
     if (dType == DType.float32) {
@@ -207,24 +207,24 @@ abstract class Tensor {
   /// ```dart
   /// Tensor x = Tensor.eye(2); // square matrix
   /// print(x);
-  /// // <Tensor(shape: [2, 2], values:
+  /// // Tensor(shape: [2, 2], values:
   /// // [[1.0, 0.0]
-  /// //  [0.0, 1.0]], dType: float32)>
+  /// //  [0.0, 1.0]], dType: float32)
   /// 
   /// Tensor y = Tensor.eye(2, numCols: 3, // rect matrix
   ///   dType: DType.int32);
   /// print(y);
-  /// // <Tensor(shape: [2, 3], values:
+  /// // Tensor(shape: [2, 3], values:
   /// // [[1, 0, 0]
-  /// //  [0, 1, 0]], dType: int32)>
+  /// //  [0, 1, 0]], dType: int32)
   /// 
   /// Tensor u = Tensor.eye(2, batchShape: [2, 1]); // batched matrices
   /// print(u);
-  /// // <Tensor(shape: [2, 1, 2, 2], values:
+  /// // Tensor(shape: [2, 1, 2, 2], values:
   /// // [[[[1.0 0.0]
   /// //   [0.0 1.0]]]
   /// // [[[1.0 0.0]
-  /// //   [0.0 1.0]]]], dType: float32)>
+  /// //   [0.0 1.0]]]], dType: float32)
   /// ```
   factory Tensor.eye(int numRows,
       {int? numCols,
@@ -261,18 +261,18 @@ abstract class Tensor {
   ///  ```dart
   /// Tensor x = Tensor.zeros([2,2], 13); // default dType is float32
   /// print(x);
-  /// // <Tensor(shape: [2, 2], values:
+  /// // Tensor(shape: [2, 2], values:
   /// // [[13.0, 13.0]
-  /// // [13.0, 13.0]], dType: float32)>
+  /// // [13.0, 13.0]], dType: float32)
   /// ```
   /// 
   /// Example with casting [value]:
   ///  ```dart
   /// Tensor y = Tensor.zeros([2,2], 13.9234, dType: int32);
   /// print(y);
-  /// // <Tensor(shape: [2, 2], values:
+  /// // Tensor(shape: [2, 2], values:
   /// // [[13, 13]
-  /// // [13, 13]], dType: int32)>
+  /// // [13, 13]], dType: int32)
   /// ```
   factory Tensor.fill(List<int> shape, dynamic value,
       {DType dType = DType.float32}) {
@@ -300,9 +300,9 @@ abstract class Tensor {
   ///  ```dart
   /// Tensor x = Tensor.ones([2,2], dType: float64);
   /// print(x);
-  /// // <Tensor(shape: [2, 2], values:
+  /// // Tensor(shape: [2, 2], values:
   /// // [[1.0, 1.0]
-  /// // [1.0, 1.0]], dType: float64)>
+  /// // [1.0, 1.0]], dType: float64)
   /// ```
   factory Tensor.ones(List<int> shape, {DType dType = DType.float32}) {
     if (dType == DType.float32) {
@@ -338,14 +338,14 @@ abstract class Tensor {
   /// final diagonal = [1,2];
   /// 
   /// var x = Tensor.diag(diagonal);
-  /// print(x); // <Tensor(shape: [2, 2], values: [[1.0, 0.0], [0.0, 2.0]], dType: float32)>
+  /// print(x); // Tensor(shape: [2, 2], values: [[1.0, 0.0], [0.0, 2.0]], dType: float32)
   /// 
   /// var y = print(Tensor.diag(diagonal, offset: -1));
   /// print(y);
   /// //<Tensor(shape: [3, 3], values:
   /// // [[0.0, 0.0, 0.0]
   /// //  [1.0, 0.0, 0.0]
-  /// //  [0.0, 2.0, 0.0]], dType: float32)>
+  /// //  [0.0, 2.0, 0.0]], dType: float32)
   /// 
   /// var t = Tensor.diag(diagonal, numCols: 3, numRows: 4);
   /// print(t.shape); // [4, 3]
@@ -399,6 +399,6 @@ abstract class Tensor {
   String toString() => toStringShort();
 
   String toStringShort() {
-    return '<Tensor(shape: $shape, dtype: $dType)>';
+    return 'Tensor(shape: $shape, dtype: $dType)';
   }
 }

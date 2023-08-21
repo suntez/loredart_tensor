@@ -15,10 +15,10 @@ import '../utils/dtype_utils.dart';
 /// Tensor a = Tensor.ones([3, 4]);
 /// Tensor b = Tensor.diag([1.0, 2.0, 3.0, 4.0], numCols: 5); // shape is [4,5]
 /// final c = matmul(a, b); // output shape is [3,5]
-/// // <Tensor(shape: [3, 5], values:
+/// // Tensor(shape: [3, 5], values:
 /// //  [[1.0, 2.0, 3.0, 4.0, 0.0]
 /// //   [1.0, 2.0, 3.0, 4.0, 0.0]
-/// //   [1.0, 2.0, 3.0, 4.0, 0.0]], dType: float32)>
+/// //   [1.0, 2.0, 3.0, 4.0, 0.0]], dType: float32)
 /// ```
 /// `Note`: For transposition, it's better to use [transposeA] or [transposeB] parameters rather than the `matrixTranspose` operation.
 /// ```dart

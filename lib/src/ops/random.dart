@@ -19,14 +19,14 @@ import '../utils/random_utils.dart';
 /// ```dart
 /// Tensor x = uniform([2,2], min: -1, max: 2, seed: 1);
 /// print(x);
-/// // <Tensor(shape: [2, 2], values:
+/// // Tensor(shape: [2, 2], values:
 /// //  [[..., ...]
-/// //  [..., ...]], dType: float32)>
+/// //  [..., ...]], dType: float32)
 ///
 /// Tensor y = uniform([1, 3], min: 3, max: 4, dType: int32);
 /// print(y);
-/// // <Tensor(shape: [1, 3], values:
-/// //  [[3, 3, 3]], dType: int32)>
+/// // Tensor(shape: [1, 3], values:
+/// //  [[3, 3, 3]], dType: int32)
 /// ```
 Tensor uniform(List<int> shape, {num min = 0.0, num max = 1.0, DType dType = DType.float32, int? seed}) {
   if (dType.isDouble) {
@@ -64,8 +64,8 @@ Tensor uniform(List<int> shape, {num min = 0.0, num max = 1.0, DType dType = DTy
 /// ```dart
 /// Tensor x = normal([3,3], std: 2.0);
 /// print(x);
-/// // <Tensor(shape: [3, 3], values:
-/// // [[...]], dType: float32)>
+/// // Tensor(shape: [3, 3], values:
+/// //  [[...]], dType: float32)
 /// ```
 Tensor normal(List<int> shape, {num mean = 0.0, num std = 1.0, DType dType = DType.float32, int? seed}) {
   if (dType.isDouble) {
@@ -87,8 +87,8 @@ Tensor normal(List<int> shape, {num mean = 0.0, num std = 1.0, DType dType = DTy
 /// ```dart
 /// Tensor x = truncatedNormal([3,3], mean: 1.0, std: 2.0);
 /// print(x);
-/// // <Tensor(shape: [3, 3], values:
-/// // [[...]], dType: float32)>
+/// // Tensor(shape: [3, 3], values:
+/// // [[...]], dType: float32)
 /// ```
 Tensor truncatedNormal(List<int> shape, {num mean = 0.0, num std = 1.0, DType dType = DType.float32, int? seed}) {
   if (dType.isDouble) {

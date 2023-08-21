@@ -102,9 +102,9 @@ abstract class NumericTensor<L extends List> implements Tensor {
   @override
   toString() {
     String tensorStr = _toStringAsValues();
-    return '<Tensor(shape: $shape, values:\n [' +
+    return 'Tensor(shape: $shape, values:\n [' +
         tensorStr +
-        '], dType: ${dType.name})>';
+        '], dType: ${dType.name})';
   }
 
   @override
