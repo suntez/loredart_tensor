@@ -1,3 +1,6 @@
+## 1.1.0
+- Update dependencies to Dart version 3
+
 ## 1.0.1
 
 - Fixed type casting in operations

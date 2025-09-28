@@ -6,7 +6,7 @@ homepage: https://github.com/suntez/loredart_tensor
 repository: https://github.com/suntez/loredart_tensor
 
 environment:
-  sdk: '>=2.16.2 <3.0.0'
+  sdk: '>=3.7.0 <4.0.0'
 
 dev_dependencies:
   lints: ^1.0.0

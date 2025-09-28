@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import '../tensors/tensor.dart';
 
-/// Checks if [dType1] == [dTypes2] and returns corresponding [DType], 
+/// Checks if [dType1] == [dTypes2] and returns corresponding [DType],
 /// otherwise will throw an ArgumentError.
 DType dTypeDecision(DType dType1, DType dType2) {
   if (dType1 == dType2) {
@@ -12,7 +12,7 @@ DType dTypeDecision(DType dType1, DType dType2) {
 }
 
 /// Returns the resulting [DType] of the operation on the Tensor of [dType] and num of [type].
-/// 
+///
 /// If the combination of [dType] and [type] is incompatible, throws an ArgumentError.
 DType dTypeAndNumDecision(DType dType, Type type, [bool tensorInitialization = false]) {
   if ((dType == DType.float32) && type == double) {
@@ -25,7 +25,7 @@ DType dTypeAndNumDecision(DType dType, Type type, [bool tensorInitialization = f
     return DType.int32;
   } else if (dType == DType.int64 && type == int) {
     return DType.int64;
-  }  else if (dType == DType.float32 && type == int) {
+  } else if (dType == DType.float32 && type == int) {
     return DType.float32;
   } else if (dType == DType.float64 && type == int) {
     return DType.float64;
@@ -37,10 +37,10 @@ DType dTypeAndNumDecision(DType dType, Type type, [bool tensorInitialization = f
 }
 
 /// Returns an empty buffer list of the given [length] according to the [dType].
-/// 
+///
 /// If [dType] is a numeric one, it will return one of the TypedData Lists,
 /// but if [dType] is not supported yet - it will throw an ArgumentError.
-/// 
+///
 /// [length] must be a positive integer, otherwise throws an ArgumentError.
 List emptyBuffer(DType dType, int length) {
   if (length <= 0) {
@@ -56,8 +56,7 @@ List emptyBuffer(DType dType, int length) {
     return Int32List(length);
   } else if (dType == DType.int64) {
     return Int64List(length);
-  }
-  else {
+  } else {
     throw ArgumentError('$dType is not supported for empty buffer', 'dType');
   }
 }

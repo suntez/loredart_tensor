@@ -8,29 +8,28 @@ import '../ops/basic_ops.dart';
 import '../utils/diagonal_utils.dart';
 
 /// A Tensor with numeric elements and [dType].
-/// 
+///
 /// [NumericTensor] is a concrete implementation of [Tensor] that stores num values in a TypedData List [buffer].
 abstract class NumericTensor<L extends List> implements Tensor {
-
   /// A storage list of tensors values.
-  /// 
+  ///
   /// Usually is one of the [TypedData] lists.
   late final L buffer;
 
   @override
   late final TensorShape shape;
-  
+
   @override
-  late final DType dType; 
+  late final DType dType;
 
   @override
   int get rank => shape.rank;
 
   /// Returns [this] + [other] element-wise.
-  /// 
+  ///
   /// [other] might be a Dart [num] compatible with [dType],
   /// or a [NumericTensor] with broadcastable shape and same [dType] as [this].
-  /// 
+  ///
   /// If [other] neither [num] nor [NumericTensor] will throw an ArgumentError.
   @override
   Tensor operator +(Object other) {
@@ -39,15 +38,18 @@ abstract class NumericTensor<L extends List> implements Tensor {
     } else if (other is NumericTensor) {
       return numericOperation(this, other, ArithmeticOperation.add);
     } else {
-      throw ArgumentError('Expected num or NumericTensor (of the same DType) as other, but received ${other.runtimeType}', 'other');
+      throw ArgumentError(
+        'Expected num or NumericTensor (of the same DType) as other, but received ${other.runtimeType}',
+        'other',
+      );
     }
   }
 
   /// Returns [this] - [other] element-wise.
-  /// 
+  ///
   /// [other] might be a Dart [num] compatible with [dType],
   /// or a [NumericTensor] with broadcastable shape and same [dType] as [this].
-  /// 
+  ///
   /// If [other] neither [num] nor [NumericTensor] will throw an ArgumentError.
   @override
   Tensor operator -(Object other) {
@@ -56,15 +58,18 @@ abstract class NumericTensor<L extends List> implements Tensor {
     } else if (other is NumericTensor) {
       return numericOperation(this, other, ArithmeticOperation.subtract);
     } else {
-      throw ArgumentError('Expected num or NumericTensor (of the same DType) as other, but received ${other.runtimeType}', 'other');
+      throw ArgumentError(
+        'Expected num or NumericTensor (of the same DType) as other, but received ${other.runtimeType}',
+        'other',
+      );
     }
   }
 
   /// Returns [this] * [other] element-wise.
-  /// 
+  ///
   /// [other] might be a Dart [num] compatible with [dType],
   /// or a [NumericTensor] with broadcastable shape and same [dType] as [this].
-  /// 
+  ///
   /// If [other] neither [num] nor [NumericTensor] will throw an ArgumentError.
   @override
   Tensor operator *(Object other) {
@@ -73,15 +78,18 @@ abstract class NumericTensor<L extends List> implements Tensor {
     } else if (other is NumericTensor) {
       return numericOperation(this, other, ArithmeticOperation.multiply);
     } else {
-      throw ArgumentError('Expected num or NumericTensor (of the same DType) as other, but received ${other.runtimeType}', 'other');
+      throw ArgumentError(
+        'Expected num or NumericTensor (of the same DType) as other, but received ${other.runtimeType}',
+        'other',
+      );
     }
   }
 
   /// Returns [this] / [other] element-wise.
-  /// 
+  ///
   /// [other] might be a Dart [num] compatible with [dType],
   /// or a [NumericTensor] with broadcastable shape and same [dType] as [this].
-  /// 
+  ///
   /// If [other] neither [num] nor [NumericTensor] will throw an ArgumentError.
   @override
   Tensor operator /(Object other) {
@@ -90,7 +98,10 @@ abstract class NumericTensor<L extends List> implements Tensor {
     } else if (other is NumericTensor) {
       return numericOperation(this, other, ArithmeticOperation.divide);
     } else {
-      throw ArgumentError('Expected num or NumericTensor (of the same DType) as other, but received ${other.runtimeType}', 'other');
+      throw ArgumentError(
+        'Expected num or NumericTensor (of the same DType) as other, but received ${other.runtimeType}',
+        'other',
+      );
     }
   }
 
@@ -102,9 +113,7 @@ abstract class NumericTensor<L extends List> implements Tensor {
   @override
   toString() {
     String tensorStr = _toStringAsValues();
-    return 'Tensor(shape: $shape, values:\n [' +
-        tensorStr +
-        '], dType: ${dType.name})';
+    return 'Tensor(shape: $shape, values:\n [' + tensorStr + '], dType: ${dType.name})';
   }
 
   @override
@@ -121,26 +130,23 @@ abstract class NumericTensor<L extends List> implements Tensor {
     int numberOfSlices = shape.size ~/ lastDim;
     List<String> dimsString = [];
     if (lastDim == 1) {
-      dimsString = List.generate(
-          shape.size, (i) => buffer.sublist(i, (i + 1)).toString());
+      dimsString = List.generate(shape.size, (i) => buffer.sublist(i, (i + 1)).toString());
     } else {
       dimsString = List.generate(
-          numberOfSlices,
-          (i) =>
-              buffer.sublist(i * lastDim, (i + 1) * lastDim).toString() +
-              ((i + 1) % shape[rank - 2] == 0 ? '' : '\n '));
+        numberOfSlices,
+        (i) =>
+            buffer.sublist(i * lastDim, (i + 1) * lastDim).toString() + ((i + 1) % shape[rank - 2] == 0 ? '' : '\n '),
+      );
     }
     for (int i = rank - 2; i > 0; i -= 1) {
       int dim = shape[i];
       numberOfSlices = numberOfSlices ~/ dim;
       dimsString = List.generate(
-          numberOfSlices,
-          (j) =>
-              dimsString
-                  .sublist(j * dim, (j + 1) * dim)
-                  .toString()
-                  .replaceAll(RegExp('[,]'), '') +
-              ((j + 1) % shape[i - 1] == 0 ? '' : '\n '));
+        numberOfSlices,
+        (j) =>
+            dimsString.sublist(j * dim, (j + 1) * dim).toString().replaceAll(RegExp('[,]'), '') +
+            ((j + 1) % shape[i - 1] == 0 ? '' : '\n '),
+      );
     }
     return dimsString.reduce((s1, s2) => s1 + s2);
   }
@@ -196,8 +202,7 @@ class Float64NumericTensor extends NumericTensor<Float64List> {
   Float64NumericTensor.eye(int numRows, int numCols, List<int> batchShape, {double value = 1.0}) {
     List<int> shape = batchShape + [numRows, numCols];
     this.shape = TensorShape(shape);
-    buffer = 
-    buffer = eyeBuffer(numRows, numCols, batchShape, dType) as Float64List;
+    buffer = buffer = eyeBuffer(numRows, numCols, batchShape, dType) as Float64List;
   }
 
   Float64NumericTensor.fill(List<int> shape, double value) {
@@ -274,7 +279,6 @@ class Int64NumericTensor extends NumericTensor<Int64List> {
     buffer = Int64List(this.shape.size)..fillRange(0, this.shape.size, 1);
   }
 }
-
 
 /// [NumericTensor] with uint8 values stored in [Uint8List].
 class Uint8NumericTensor extends NumericTensor<Uint8List> {

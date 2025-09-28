@@ -1,7 +1,7 @@
 import 'dart:math' show min;
 
 /// The shape of a [Tensor].
-/// 
+///
 /// Represents a number of dimensions and a size for each dimension of a [Tensor].
 class TensorShape {
   /// The list of dims
@@ -14,9 +14,9 @@ class TensorShape {
   int get size => list.reduce((d1, d2) => d1 * d2);
 
   /// Creates new TensorShape from non-empty [shape].
-  /// 
+  ///
   /// [shape] entries must be positive integers, otherwise will throw an ArgumentError.
-  /// 
+  ///
   /// Example:
   /// ```dart
   /// final shape = TensorShape([13, 8, 5]);
@@ -35,7 +35,7 @@ class TensorShape {
   }
 
   /// The dimension size at the given [index] in the shape.
-  /// 
+  ///
   /// [TensorShape] supports negative indices, so [index] can be from a range `[-rank, rank)`.
   /// Example:
   /// ```dart
@@ -56,16 +56,16 @@ class TensorShape {
   }
 
   /// Whether this shape is equal to [other].
-  /// 
+  ///
   /// Shapes are considered equal if they are of the same rank and corresponding dims are equal.
-  /// 
+  ///
   /// Example:
   /// ```dart
   /// final shape1 = TensorShape([13, 8, 5]);
-  /// 
+  ///
   /// final shape2 = TensorShape([13, 8, 5]);
   /// shape1.equalTo(shape2); // true
-  /// 
+  ///
   /// final shape3 = TensorShape([13, 8, 4]);
   /// shape1.equalTo(shape3); // false
   /// ```
@@ -82,18 +82,18 @@ class TensorShape {
   }
 
   /// Whether this shape is compatible with [other].
-  /// 
+  ///
   /// Shapes are considered compatible if they are of the same rank, and corresponding dims are either equal or one of them is 1.
-  /// 
+  ///
   /// If shapes are equal, they are compatible as well.
-  /// 
+  ///
   /// Example:
   /// ```dart
   /// final shape1 = TensorShape([13, 8, 5]);
-  /// 
+  ///
   /// final shape2 = TensorShape([13, 8, 1]);
   /// shape1.compatibleWith(shape2); // true
-  /// 
+  ///
   /// final shape3 = TensorShape([13, 1, 1, 1]);
   /// shape1.compatibleWith(shape3); // false
   /// ```
@@ -110,17 +110,17 @@ class TensorShape {
   }
 
   /// Whether this shape is a subshape of [other] or vice versa.
-  /// 
+  ///
   /// Shapes are considered equalWithLastDims if they have the same last k dims equal.
-  /// 
+  ///
   /// If shapes are equal, they are equalWithLastDims as well.
   /// Example:
   /// ```dart
   /// final shape1 = TensorShape([13, 8, 5]);
-  /// 
+  ///
   /// final shape2 = TensorShape([8, 5]);
   /// shape1.equalWithLastDims(shape2); // true
-  /// 
+  ///
   /// final shape3 = TensorShape([13]);
   /// shape1.equalWithLastDims(shape3); // false
   /// ```
@@ -135,27 +135,27 @@ class TensorShape {
   }
 
   /// Whether this shape is broadcastable with [other].
-  /// 
+  ///
   /// Shapes are considered broadcastable if they are either equal or one compatible or have common last k dims.
-  /// 
+  ///
   /// Arithmetic and comparison operations support [Tensor]s with broadcastable shapes.
-  /// 
+  ///
   /// Example:
   /// ```dart
   /// final shape1 = TensorShape([13, 8, 5]);
-  /// 
+  ///
   /// final shape2 = TensorShape([13, 8, 5]);
   /// shape1.broadcastableWith(shape2); // true
-  /// 
+  ///
   /// final shape3 = TensorShape([1, 8, 1]);
   /// shape1.broadcastableWith(shape3); // true
-  /// 
+  ///
   /// final shape4 = TensorShape([5]);
   /// shape1.broadcastableWith(shape4); // true
-  /// 
+  ///
   /// final shape5 = TensorShape([13, 8]);
   /// shape1.broadcastableWith(shape5); // false
-  /// 
+  ///
   /// final shape6 = TensorShape([13, 1, 1, 1]);
   /// shape1.broadcastableWith(shape6); // false
   /// ```

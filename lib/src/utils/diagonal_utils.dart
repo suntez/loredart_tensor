@@ -12,14 +12,14 @@ List eyeBuffer(int numRows, int numCols, List<int> batchShape, DType dType) {
   final int batchSize = batchShape.isEmpty ? 0 : len ~/ numRows ~/ numCols - 1;
   for (int b = 0; b <= batchSize; b += 1) {
     for (int i = 0; i < math.min(numRows, numCols); i += 1) {
-        buffer[b * numRows * numCols + i * numCols + i] = dType.isInt ? 1 : 1.0;
+      buffer[b * numRows * numCols + i * numCols + i] = dType.isInt ? 1 : 1.0;
     }
   }
   return buffer;
 }
 
 /// Constructs diagonal [Tensor] of the [dType], from elements of [diagonal], with given [offset].
-/// 
+///
 /// [numRows] and [numCols] might be used to change the shape of the matrix.
 Tensor createDiagTensor(List<dynamic> diagonal, DType dType, int offset, int? numRows, int? numCols) {
   if (diagonal[0] is num) {
@@ -30,18 +30,19 @@ Tensor createDiagTensor(List<dynamic> diagonal, DType dType, int offset, int? nu
     numRows ??= diagonal.length + offset.abs();
     numCols ??= diagonal.length + offset.abs();
     if (numCols < diagonal.length || numRows < diagonal.length) {
-      throw ArgumentError('numRows and numCols must be equal or greater then length of the diagonal elements with offset, but received numCols: $numCols, numRows: $numRows',);
+      throw ArgumentError(
+        'numRows and numCols must be equal or greater then length of the diagonal elements with offset, but received numCols: $numCols, numRows: $numRows',
+      );
     }
     final int length = numCols * numRows;
     dType = dTypeAndNumDecision(dType, diagonal[0].runtimeType, true);
     List buffer = emptyBuffer(dType, length);
     for (int i = 0; i < diagonal.length; i += 1) {
-      buffer[i * numCols + i + (offset >= 0 ? offset : (-offset)*numCols)] = dType.isInt ? (diagonal[i] as num).toInt() : (diagonal[i] as num).toDouble();
+      buffer[i * numCols + i + (offset >= 0 ? offset : (-offset) * numCols)] =
+          dType.isInt ? (diagonal[i] as num).toInt() : (diagonal[i] as num).toDouble();
     }
     return Tensor.fromTypedDataList(buffer, [numRows, numCols], dType: dType);
-  }
-  else if (diagonal[0] is List<num>) {
-
+  } else if (diagonal[0] is List<num>) {
     final int lengthOfDiag = diagonal[0].length;
     if (diagonal.any((element) => element.length != lengthOfDiag)) {
       throw ArgumentError('Length of all diagonal elements must be equal', 'diagonal');
@@ -55,18 +56,24 @@ Tensor createDiagTensor(List<dynamic> diagonal, DType dType, int offset, int? nu
     numCols ??= lengthOfDiag + offset.abs();
 
     if (numCols < lengthOfDiag || numRows < lengthOfDiag) {
-      throw ArgumentError('numRows and numCols must be >= length of the diagonal(s) elements with offset, but received numCols: $numCols, numRows: $numRows');
+      throw ArgumentError(
+        'numRows and numCols must be >= length of the diagonal(s) elements with offset, but received numCols: $numCols, numRows: $numRows',
+      );
     }
 
     final int length = diagonal.length * numCols * numRows;
     List buffer = emptyBuffer(dType, length);
     for (int b = 0; b < diagonal.length; b += 1) {
       for (int i = 0; i < diagonal[0].length; i += 1) {
-        buffer[b*numRows*numCols + i * numCols + i + (offset >= 0 ? offset : (-offset)*numCols)] = dType.isInt ? (diagonal[b][i] as num).toInt() : (diagonal[b][i] as num).toDouble();
+        buffer[b * numRows * numCols + i * numCols + i + (offset >= 0 ? offset : (-offset) * numCols)] =
+            dType.isInt ? (diagonal[b][i] as num).toInt() : (diagonal[b][i] as num).toDouble();
       }
     }
     return Tensor.fromTypedDataList(buffer, [diagonal.length, numRows, numCols], dType: dType);
   } else {
-    throw ArgumentError('Expected List<num> or List<List<num>> as diagonal, but received ${diagonal.runtimeType}', 'diagonal');
+    throw ArgumentError(
+      'Expected List<num> or List<List<num>> as diagonal, but received ${diagonal.runtimeType}',
+      'diagonal',
+    );
   }
 }

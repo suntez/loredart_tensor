@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:loredart_tensor/loredart_tensor.dart';
 
-/// Example usage of the [Tensor]s  
+/// Example usage of the [Tensor]s
 void main(List<String> args) {
-  final x = Tensor.diag([1,2,3,4,5,6,7,8], offset: -1, numRows: 10);
+  final x = Tensor.diag([1, 2, 3, 4, 5, 6, 7, 8], offset: -1, numRows: 10);
 
   // Tensor properties
   print(x.dType);

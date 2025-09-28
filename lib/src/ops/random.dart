@@ -5,16 +5,16 @@ import '../tensors/tensor.dart';
 import '../utils/random_utils.dart';
 
 /// Outputs [Tensor] of given [shape] with random values from a uniform distribution.
-/// 
+///
 /// The generated values follow a uniform distribution in the range [[min], [maxval]),
 /// the lower bound is included, while the upper bound - excluded.
-/// 
+///
 /// The default range is [0, 1) (in such case for int based [dType] will returns zeros).
-/// 
+///
 /// If [min] > [max], will swap [min] and [max].
-/// 
+///
 /// Throws an ArgumentError if given [DType] is non-numeric.
-/// 
+///
 /// Example:
 /// ```dart
 /// Tensor x = uniform([2,2], min: -1, max: 2, seed: 1);
@@ -38,7 +38,10 @@ Tensor uniform(List<int> shape, {num min = 0.0, num max = 1.0, DType dType = DTy
       min = max;
       max = swapTemp;
     }
-    List<double> values = List.generate(shape.reduce((e1, e2) => e1*e2), (_) => (min + random.nextDouble() * (max-min)));
+    List<double> values = List.generate(
+      shape.reduce((e1, e2) => e1 * e2),
+      (_) => (min + random.nextDouble() * (max - min)),
+    );
     return Tensor.constant(values, shape: shape, dType: dType);
   } else if (dType.isInt) {
     final Random random = Random(seed);
@@ -49,7 +52,10 @@ Tensor uniform(List<int> shape, {num min = 0.0, num max = 1.0, DType dType = DTy
       min = max;
       max = swapTemp;
     }
-    List<int> values = List.generate(shape.reduce((e1, e2) => e1*e2), (_) => (min + random.nextInt((max-min).toInt())).toInt());
+    List<int> values = List.generate(
+      shape.reduce((e1, e2) => e1 * e2),
+      (_) => (min + random.nextInt((max - min).toInt())).toInt(),
+    );
     return Tensor.constant(values, shape: shape, dType: dType);
   } else {
     throw ArgumentError('DType $dType is not supported for uniform random generation', 'dType');
@@ -57,9 +63,9 @@ Tensor uniform(List<int> shape, {num min = 0.0, num max = 1.0, DType dType = DTy
 }
 
 /// Outputs [Tensor] of given [shape] with random values from a normal distribution with mean [mean] and standard deviation [std].
-/// 
+///
 /// Throws an ArgumentError if [dType] is not [DType.float32] or [DType.float64].
-/// 
+///
 /// Example:
 /// ```dart
 /// Tensor x = normal([3,3], std: 2.0);
@@ -69,7 +75,7 @@ Tensor uniform(List<int> shape, {num min = 0.0, num max = 1.0, DType dType = DTy
 /// ```
 Tensor normal(List<int> shape, {num mean = 0.0, num std = 1.0, DType dType = DType.float32, int? seed}) {
   if (dType.isDouble) {
-    List<double> values = generateNormallyDistList(shape.reduce((e1,e2) => e1*e2), mean, std, seed: seed);
+    List<double> values = generateNormallyDistList(shape.reduce((e1, e2) => e1 * e2), mean, std, seed: seed);
     return Tensor.constant(values, shape: shape, dType: dType);
   } else {
     throw ArgumentError('DType $dType is not supported for normal random generation', 'dType');
@@ -77,12 +83,12 @@ Tensor normal(List<int> shape, {num mean = 0.0, num std = 1.0, DType dType = DTy
 }
 
 /// Outputs [Tensor] of given [shape] with random values from a truncated normal distribution.
-/// 
+///
 /// The values are drawn from a normal distribution with specified [mean] and [std],
 /// discarding and re-drawing any samples that are more than two standard deviations from the [mean].
-/// 
+///
 /// Throws an ArgumentError if [dType] is not [DType.float32] or [DType.float64].
-/// 
+///
 /// Example:
 /// ```dart
 /// Tensor x = truncatedNormal([3,3], mean: 1.0, std: 2.0);
@@ -92,7 +98,7 @@ Tensor normal(List<int> shape, {num mean = 0.0, num std = 1.0, DType dType = DTy
 /// ```
 Tensor truncatedNormal(List<int> shape, {num mean = 0.0, num std = 1.0, DType dType = DType.float32, int? seed}) {
   if (dType.isDouble) {
-    List<double> values = generateTruncatedNormallyDistList(shape.reduce((e1,e2) => e1*e2), mean, std, seed: seed);
+    List<double> values = generateTruncatedNormallyDistList(shape.reduce((e1, e2) => e1 * e2), mean, std, seed: seed);
     return Tensor.constant(values, shape: shape, dType: dType);
   } else {
     throw ArgumentError('DType $dType is not supported for normal random generation', 'dType');
